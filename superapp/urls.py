@@ -24,5 +24,7 @@ urlpatterns = [
     path('standard_forms/',views.standard_forms,name='standard_forms'),
     path('terms_conditions/',views.terms_conditions,name='terms_conditions'),
     path('wishlist/',views.wishlist ,name='wishlist'),
-    path("update_items/", views.update_items, name="update_items")
+    path("update_items/", views.update_items, name="update_items"),
+    path("price_filter/", views.price_filter, name="price_filter"),
+
 ]

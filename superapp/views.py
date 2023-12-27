@@ -2,7 +2,7 @@ from django.shortcuts import render
 from superapp.models import *
 import json
 from django.http import JsonResponse
-
+from django.db.models.functions import Length
 
 
 def base(request):
@@ -58,7 +58,12 @@ def account(request):
     return render(request,'account.html')
 
 def checkout(request):
-    return render(request,'checkout.html')
+    countries = Countries.objects.all()
+
+    print(countries)
+
+    context = {'countries':countries}
+    return render(request,'checkout.html',context)
 
 def contacts(request):
     return render(request,'contacts.html')
@@ -78,8 +83,49 @@ def index_light_footer(request):
 def privacy_policy(request):
     return render(request,'privacy-policy.html')
 
+from django.db.models import Q
+from django.forms.models import model_to_dict
+
 def product_list(request):
-    return render(request,'product-list.html')
+    products = Product.objects.all()
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            newChecked = data['newChecked']
+            saleChecked = data['saleChecked']
+
+            # print(newChecked,saleChecked)
+
+            if(newChecked and saleChecked):
+                products = Product.objects.filter(Q(new=True) | Q(sale=True))
+
+
+            elif(newChecked):
+                products = Product.objects.filter(new=True)
+
+            elif(saleChecked):
+                products = Product.objects.filter(new=True)
+            
+            product_list = []
+            if products.exists():
+                for product in products:
+                    product_list.append({
+                        'id':product.id,
+                        'name':product.name,
+                        'price': product.price,
+                        'image': product.imageURL,
+                        'sale':product.sale,
+                        'new':product.new,
+                         })
+
+            return JsonResponse(product_list,safe=False)
+
+        except Exception as e:
+            print(e)
+
+    context = {'products':products}
+        
+    return render(request,'product-list.html',context)
 
 def search_result(request):
     return render(request,'search-result.html')
@@ -88,35 +134,6 @@ def shopping_cart_null(request):
     return render(request,'shopping_cart-null.html')
 
 def shopping_cart(request):
-
-    # if request.user.is_authenticated:
-    #     customer = request.user.customer
-        
-    #     orders = Order.objects.filter(customer=customer,complete=False)
-                
-    #     if orders.exists():
-    #         order = orders.first()
-    #     else:
-    #         order = Order.objects.create(customer=customer,complete=False)
-
-    #     items = OrderItem.objects.filter(order=order)
-
-    #     cart_total_items = int(order.cart_total_items)
-    #     cart_total_price = order.cart_total_price
-
-    #     context = {
-    #             'cart_total_items': cart_total_items,
-    #             'cart_total_price': cart_total_price,
-    #             'items': items
-    #             }
-        
-    # else:
-    #     context = {
-    #             'cart_total_items': 0,
-    #             'cart_total_price': 0,
-    #             'items':[]
-    #             }
-    
     return render(request,'shopping-cart.html')
 
 def standard_forms(request):
@@ -209,3 +226,61 @@ def update_items(request):
             return JsonResponse("ERROR",safe=False)
     
     return JsonResponse("Item was added", safe=False)
+
+
+
+def price_filter(request):
+
+    product_list = []
+    value1 = 0
+    value2 = 500
+    sort_by = 'name'
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            source = data.get('source')
+            print(source)
+            print('Bame ')
+            
+            if source == 'price_range':
+                value1 = data.get('value1')
+                value2 = data.get('value2')
+                print(value1,value2)
+
+                print(value1,value2)
+                products = Product.objects.filter(price__gt=value1,price__lt=value2)
+
+            elif source == 'display_order':
+                sort_by = data.get('sort_by')
+
+                if len(sort_by)<4:
+                    number = int(sort_by)
+
+                    products = Product.objects.filter(id__lt=number+1)
+
+                elif sort_by.lower() == 'name (a - z)':
+                    products = Product.objects.order_by('name')
+                elif sort_by.lower() == 'name (z - a)':
+                    products = Product.objects.order_by('-name')
+                elif sort_by.lower() == 'price (low > high)':
+                    products = Product.objects.order_by('price')
+                elif sort_by.lower() == 'price (high > low)':
+                    products = Product.objects.order_by('-price')
+                else:
+                    products = Product.objects.all()
+
+            for product in products:
+                product_list.append({
+                'id':product.id,
+                'name':product.name,
+                'price':product.price,
+                'image':product.imageURL,
+                'new':product.new,
+                'sale':product.sale,
+                })
+
+
+        except Exception as e:
+            print(e)
+
+    return JsonResponse(product_list,safe=False)

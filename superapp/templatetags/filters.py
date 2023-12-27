@@ -4,7 +4,7 @@ register = template.Library()
 
 @register.filter
 def multiply(value,multiplyby):
-    return round(float(value*multiplyby),2)
+    return round(float(value)*float(multiplyby),2)
 
 @register.filter
 def mod(value,dividedby):

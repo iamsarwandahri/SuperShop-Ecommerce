@@ -95,73 +95,84 @@
                       <h3>Your Personal Details</h3>
                       <div class="form-group">
                         <label for="firstname">First Name <span class="require">*</span></label>
-                        <input type="text" id="firstname" class="form-control">
+                        <input name="firstname" type="text" id="firstname" class="form-control">
                       </div>
                       <div class="form-group">
                         <label for="lastname">Last Name <span class="require">*</span></label>
-                        <input type="text" id="lastname" class="form-control">
+                        <input name="lastname" type="text" id="lastname" class="form-control">
                       </div>
                       <div class="form-group">
                         <label for="email">E-Mail <span class="require">*</span></label>
-                        <input type="text" id="email" class="form-control">
+                        <input name="email" type="email" id="email" class="form-control">
                       </div>
                       <div class="form-group">
-                        <label for="telephone">Telephone <span class="require">*</span></label>
-                        <input type="text" id="telephone" class="form-control">
+                        <label for="phone">Phone <span class="require">*</span></label>
+                        <input name="phone" type="tel" id="phone" class="form-control">
                       </div>
-                      <div class="form-group">
+                      <!-- <div class="form-group">
                         <label for="fax">Fax</label>
                         <input type="text" id="fax" class="form-control">
-                      </div>
+                      </div> -->
 
                       <h3>Your Password</h3>
                       <div class="form-group">
                         <label for="password">Password <span class="require">*</span></label>
-                        <input type="password" id="password" class="form-control">
+                        <input name="password" type="password" id="password" class="form-control">
                       </div>
                       <div class="form-group">
                         <label for="password-confirm">Password Confirm <span class="require">*</span></label>
-                        <input type="text" id="password-confirm" class="form-control">
+                        <input name="password-confirm" type="text" id="password-confirm" class="form-control">
                       </div>
                     </div>
                     <div class="col-md-6 col-sm-6">
                       <h3>Your Address</h3>
-                      <div class="form-group">
+                      <!-- <div class="form-group">
                         <label for="company">Company</label>
                         <input type="text" id="company" class="form-control">
-                      </div>
+                      </div> -->
                       <div class="form-group">
-                        <label for="address1">Address 1</label>
-                        <input type="text" id="address1" class="form-control">
+                        <label for="address">Address</label>
+                        <input name="address" type="text" id="address1" class="form-control">
                       </div>
-                      <div class="form-group">
+                      <!-- <div class="form-group">
                         <label for="address2">Address 2</label>
                         <input type="text" id="address2" class="form-control">
-                      </div>
+                      </div> -->
                       <div class="form-group">
                         <label for="city">City <span class="require">*</span></label>
-                        <input type="text" id="city" class="form-control">
+                        <input name="city" type="text" id="city" class="form-control">
                       </div>
                       <div class="form-group">
                         <label for="post-code">Post Code <span class="require">*</span></label>
-                        <input type="text" id="post-code" class="form-control">
+                        <input name="post-code" type="text" id="post-code" class="form-control">
                       </div>
+                      
                       <div class="form-group">
                         <label for="country">Country <span class="require">*</span></label>
-                        <select class="form-control input-sm" id="country">
+                        <select name="country-dd" class="form-control input-sm" id="country">
                           <option value=""> --- Please Select --- </option>
-                          <option value="244">Aaland Islands</option>
-                          <option value="1">Afghanistan</option>
-                          <option value="2">Albania</option>
+                          {% for country in countries  %}
+                          <option id="{{country.cody}}" value="{{country.code}}">{{country.name}}</option>
+                          {% endfor %}
                         </select>
                       </div>
-                      <div class="form-group">
+                      
+                      <!-- <div class="form-group">
                         <label for="region-state">Region/State <span class="require">*</span></label>
-                        <select class="form-control input-sm" id="region-state">
-                          <option value=""> --- Please Select --- </option><option value="3513">Aberdeen</option><option value="3514">Aberdeenshire</option><option value="3515">Anglesey</option>
+                        <select class="form-control" id="region-state">
+                          <option value=""> --- Please Select --- </option>
+                          {% for country in countries  %}
+                          <option id="{{country.cody}}" value="{{country.code}}">{{country.name}}</option>
+                          {% endfor %}
                         </select>
+                      </div> -->
+
+                      <div class="form-group">
+                        <label for="post-code">State <span class="require">*</span></label>
+                        <input name="astate " type="text" id="state" name="state" class="form-control">
                       </div>
                     </div>
+
                     <hr>
                     <div class="col-md-12">                      
                       <div class="checkbox">
@@ -169,13 +180,13 @@
                           <input type="checkbox"> I wish to subscribe to the OXY newsletter. 
                         </label>
                       </div>
-                      <div class="checkbox">
+                      <!-- <div class="checkbox">
                         <label>
                           <input type="checkbox" checked="checked"> My delivery and billing addresses are the same.
                         </label>
-                      </div>
+                      </div> -->
                       <button class="btn btn-primary  pull-right" type="submit" data-toggle="collapse" data-parent="#checkout-page" data-target="#shipping-address-content" id="button-payment-address">Continue</button>
-                      <div class="checkbox pull-right">
+                      <div class="checkbox">
                         <label>
                           <input type="checkbox"> I have read and agree to the <a title="Privacy Policy" href="javascript:;">Privacy Policy</a> &nbsp;&nbsp;&nbsp; 
                         </label>
@@ -200,61 +211,60 @@
                     <div class="col-md-6 col-sm-6">
                       <div class="form-group">
                         <label for="firstname-dd">First Name <span class="require">*</span></label>
-                        <input type="text" id="firstname-dd" class="form-control">
+                        <input name="firstname-dd" type="text" id="firstname-dd" class="form-control">
                       </div>
                       <div class="form-group">
                         <label for="lastname-dd">Last Name <span class="require">*</span></label>
-                        <input type="text" id="lastname-dd" class="form-control">
+                        <input name="lastname-dd" type="text" id="lastname-dd" class="form-control">
                       </div>
                       <div class="form-group">
                         <label for="email-dd">E-Mail <span class="require">*</span></label>
-                        <input type="text" id="email-dd" class="form-control">
+                        <input name="email-dd" type="email" id="email-dd" class="form-control">
                       </div>
                       <div class="form-group">
-                        <label for="telephone-dd">Telephone <span class="require">*</span></label>
-                        <input type="text" id="telephone-dd" class="form-control">
+                        <label for="telephone-dd">Phone <span class="require">*</span></label>
+                        <input name="phone-dd" type="tel" id="telephone-dd" class="form-control">
                       </div>
-                      <div class="form-group">
+                      <!-- <div class="form-group">
                         <label for="fax-dd">Fax</label>
                         <input type="text" id="fax-dd" class="form-control">
-                      </div>
-                      <div class="form-group">
+                      </div> -->
+                      <!-- <div class="form-group">
                         <label for="company-dd">Company</label>
                         <input type="text" id="company-dd" class="form-control">
-                      </div>
+                      </div> -->
                     </div>
                     <div class="col-md-6 col-sm-6">
                       <div class="form-group">
-                        <label for="address1-dd">Address 1</label>
-                        <input type="text" id="address1-dd" class="form-control">
+                        <label for="address-dd">Address</label>
+                        <input name="address-dd" type="text" id="address-dd" class="form-control">
                       </div>
-                      <div class="form-group">
+                      <!-- <div class="form-group">
                         <label for="address2-dd">Address 2</label>
                         <input type="text" id="address2-dd" class="form-control">
-                      </div>
+                      </div> -->
                       <div class="form-group">
                         <label for="city-dd">City <span class="require">*</span></label>
-                        <input type="text" id="city-dd" class="form-control">
+                        <input name="city-dd" type="text" id="city-dd" class="form-control">
                       </div>
                       <div class="form-group">
                         <label for="post-code-dd">Post Code <span class="require">*</span></label>
-                        <input type="text" id="post-code-dd" class="form-control">
+                        <input name="post-code-dd" type="text" id="post-code-dd" class="form-control">
                       </div>
                       <div class="form-group">
                         <label for="country-dd">Country <span class="require">*</span></label>
-                        <select class="form-control input-sm" id="country-dd">
+                        <select name="country-dd" class="form-control input-sm" id="country-dd">
                           <option value=""> --- Please Select --- </option>
-                          <option value="244">Aaland Islands</option>
-                          <option value="1">Afghanistan</option>
-                          <option value="2">Albania</option>
+                          {% for country in countries  %}
+                          <option id="{{country.cody}}-dd" value="{{country.code}}">{{country.name}}</option>
+                          {% endfor %}
                         </select>
                       </div>
                       <div class="form-group">
-                        <label for="region-state-dd">Region/State <span class="require">*</span></label>
-                        <select class="form-control input-sm" id="region-state-dd">
-                          <option value=""> --- Please Select --- </option><option value="3513">Aberdeen</option><option value="3514">Aberdeenshire</option><option value="3515">Anglesey</option><option value="3516">Angus</option>
-                        </select>
+                        <label for="state-dd">State <span class="require">*</span></label>
+                        <input name="state-dd" type="text" id="state-dd" class="form-control">
                       </div>
+            
                     </div>
                     <div class="col-md-12">
                       <button class="btn btn-primary  pull-right" type="submit" id="button-shipping-address" data-toggle="collapse" data-parent="#checkout-page" data-target="#shipping-method-content">Continue</button>
@@ -265,7 +275,7 @@
               <!-- END SHIPPING ADDRESS -->
 
               <!-- BEGIN SHIPPING METHOD -->
-              <div id="shipping-method" class="panel panel-default">
+              <!-- <div id="shipping-method" class="panel panel-default">
                 <div class="panel-heading">
                   <h2 class="panel-title">
                     <a data-toggle="collapse" data-parent="#checkout-page" href="#shipping-method-content" class="accordion-toggle">
@@ -291,7 +301,7 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> -->
               <!-- END SHIPPING METHOD -->
 
               <!-- BEGIN PAYMENT METHOD -->
@@ -299,7 +309,7 @@
                 <div class="panel-heading">
                   <h2 class="panel-title">
                     <a data-toggle="collapse" data-parent="#checkout-page" href="#payment-method-content" class="accordion-toggle">
-                      Step 5: Payment Method
+                      Step 4: Payment Method
                     </a>
                   </h2>
                 </div>
@@ -333,7 +343,7 @@
                 <div class="panel-heading">
                   <h2 class="panel-title">
                     <a data-toggle="collapse" data-parent="#checkout-page" href="#confirm-content" class="accordion-toggle">
-                      Step 6: Confirm Order
+                      Step 5: Confirm Order
                     </a>
                   </h2>
                 </div>
@@ -350,41 +360,29 @@
                           <th class="checkout-price">Price</th>
                           <th class="checkout-total">Total</th>
                         </tr>
+                        {% for item in c_items %}
                         <tr>
                           <td class="checkout-image">
-                            <a href="javascript:;"><img src="assets/pages/img/products/model3.jpg" alt="Berry Lace Dress"></a>
+                            <a href="javascript:;"><img src={{item.product.imageURL}} alt="Berry Lace Dress"></a>
                           </td>
                           <td class="checkout-description">
-                            <h3><a href="javascript:;">Cool green dress with red bell</a></h3>
-                            <p><strong>Item 1</strong> - Color: Green; Size: S</p>
+                            <h3><a href="javascript:;">{{item.product.name}}</a></h3>
+                            <p><strong>Item {{forloop.counter}}</strong> - Color: Green; Size: S</p>
                             <em>More info is here</em>
                           </td>
-                          <td class="checkout-model">RES.193</td>
-                          <td class="checkout-quantity">1</td>
-                          <td class="checkout-price"><strong><span>$</span>47.00</strong></td>
-                          <td class="checkout-total"><strong><span>$</span>47.00</strong></td>
+                          <td class="checkout-model">{{item.product.reference}}</td>
+                          <td class="checkout-quantity">{{item.quantity}}</td>
+                          <td class="checkout-price"><strong><span>$</span>{{item.product.price}}</strong></td>
+                          <td class="checkout-total"><strong><span>$</span>{{item.total_price}}</strong></td>
                         </tr>
-                        <tr>
-                          <td class="checkout-image">
-                            <a href="javascript:;"><img src="assets/pages/img/products/model4.jpg" alt="Berry Lace Dress"></a>
-                          </td>
-                          <td class="checkout-description">
-                            <h3><a href="javascript:;">Cool green dress with red bell</a></h3>
-                            <p><strong>Item 1</strong> - Color: Green; Size: S</p>
-                            <em>More info is here</em>
-                          </td>
-                          <td class="checkout-model">RES.193</td>
-                          <td class="checkout-quantity">1</td>
-                          <td class="checkout-price"><strong><span>$</span>47.00</strong></td>
-                          <td class="checkout-total"><strong><span>$</span>47.00</strong></td>
-                        </tr>
+                        {% endfor %}
                       </table>
                       </div>
                       <div class="checkout-total-block">
                         <ul>
                           <li>
                             <em>Sub total</em>
-                            <strong class="price"><span>$</span>47.00</strong>
+                            <strong class="price"><span>$</span>{{c_total_price}}</strong>
                           </li>
                           <li>
                             <em>Shipping cost</em>
@@ -392,15 +390,11 @@
                           </li>
                           <li>
                             <em>Eco Tax (-2.00)</em>
-                            <strong class="price"><span>$</span>3.00</strong>
-                          </li>
-                          <li>
-                            <em>VAT (17.5%)</em>
-                            <strong class="price"><span>$</span>3.00</strong>
+                            <strong class="price"><span>$</span>2.00</strong>
                           </li>
                           <li class="checkout-total-price">
                             <em>Total</em>
-                            <strong class="price"><span>$</span>56.00</strong>
+                            <strong class="price"><span>$</span>{{c_total_price|add:5.00}}</strong>
                           </li>
                         </ul>
                       </div>

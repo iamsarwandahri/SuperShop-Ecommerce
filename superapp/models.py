@@ -14,7 +14,7 @@ class Customer(models.Model):
 class Product(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=264)
-    price = models.FloatField()
+    price = models.DecimalField(max_digits=7, decimal_places=2)
     new = models.BooleanField(default=False)
     sale = models.BooleanField(default=False)
     avail = models.BooleanField(default=True)
@@ -102,7 +102,7 @@ class Order(models.Model):
         total = 0.0
         orderItems = self.orderitem_set.all()
         for item in orderItems:
-            total = total + (item.product.price*item.quantity) 
+            total = total + (float(item.product.price)*item.quantity)
         return round(total,2)
 
 
@@ -118,5 +118,13 @@ class OrderItem(models.Model):
     
     @property
     def total_price(self):
-        total = self.quantity*self.product.price
+        total = self.quantity*float(self.product.price)
         return round(total,2)
+
+
+class Countries(models.Model):
+    code = models.CharField(max_length=5)
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
