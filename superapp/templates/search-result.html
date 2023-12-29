@@ -26,28 +26,30 @@
               <h2>Search categories</h2>
               <h3>Availability</h3>
               <div class="checkbox-list">
-                <label><input type="checkbox"> Not Available (3)</label>
-                <label><input type="checkbox"> In Stock (26)</label>
+                <label><input name="newbox" id="newbox" type="checkbox"> New</label>
+                <label><input name="salebox" id="salebox" type="checkbox"> Sale</label>
               </div>
 
               <h3>Price</h3>
               <p>
                 <label for="amount">Range:</label>
-                <input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold;">
+                <input readonly='true' name="slider" type="text" id="amount"
+                  style="border:0; color:#f6931f; font-weight:bold;">
               </p>
-              <div id="slider-range"></div>
+              <div id="slider-range" data-min="0" data-max="500"></div>
             </div>
 
             <div class="sidebar-products clearfix">
               <h2>Bestsellers</h2>
+
               {% for item in c_items  %}
-            
               <div class="item">
                 <a href="{% url 'item' id=item.product.id %}"><img src={{item.product.imageURL}} alt="Some Shoes in Animal with Cut Out"></a>
                 <h3><a href="{% url 'item' id=item.product.id %}">{{item.product.name}}</a></h3>
                 <div class="price">${{item.product.price}}</div>
               </div>
               {% endfor %}
+            
             </div>
           </div>
           <!-- END SIDEBAR -->
@@ -65,7 +67,7 @@
                   <form method="POST">
                     {% csrf_token %}
                     <div class="input-group">
-                      <input name="searchBox" type="text" placeholder="Search" class="form-control">
+                      <input id="searchBox" name="searchBox" type="text" value="{{message}}" placeholder="Search" class="form-control">
                       <span class="input-group-btn">
                         <button id="search" class="btn btn-primary" type="submit">Search</button>
                       </span>
@@ -82,17 +84,17 @@
               <div class="col-md-10 col-sm-10">
                 <div class="pull-right">
                   <label class="control-label">Show:</label>
-                  <select class="form-control input-sm">
-                    <option value="#?limit=24" selected="selected">24</option>
-                    <option value="#?limit=25">25</option>
-                    <option value="#?limit=50">50</option>
-                    <option value="#?limit=75">75</option>
-                    <option value="#?limit=100">100</option>
+                  <select class="selectOption selectItemNo" id="showNo" class="form-control input-sm">
+                    <option value="#?limit=24">2</option>
+                    <option value="#?limit=25">5</option>
+                    <option value="#?limit=50" selected="selected">10</option>
+                    <option value="#?limit=75">15</option>
+                    <option value="#?limit=100">20</option>
                   </select>
                 </div>
                 <div class="pull-right">
                   <label class="control-label">Sort&nbsp;By:</label>
-                  <select class="form-control input-sm">
+                  <select class="selectOption selectOrder" id="mySelect" class="form-control input-sm">
                     <option value="#?sort=p.sort_order&amp;order=ASC" selected="selected">Default</option>
                     <option value="#?sort=pd.name&amp;order=ASC">Name (A - Z)</option>
                     <option value="#?sort=pd.name&amp;order=DESC">Name (Z - A)</option>
@@ -100,8 +102,6 @@
                     <option value="#?sort=p.price&amp;order=DESC">Price (High &gt; Low)</option>
                     <option value="#?sort=rating&amp;order=DESC">Rating (Highest)</option>
                     <option value="#?sort=rating&amp;order=ASC">Rating (Lowest)</option>
-                    <option value="#?sort=p.model&amp;order=ASC">Model (A - Z)</option>
-                    <option value="#?sort=p.model&amp;order=DESC">Model (Z - A)</option>
                   </select>
                 </div>
               </div>
@@ -121,8 +121,6 @@
 
               <!-- BEGIN PRODUCT LIST -->
               <div class="row product-list products-filter">
-
-
 
                 {% for product in products|slice:":10"  %}
                 {% if forloop.counter0|mod:3 %}
@@ -207,7 +205,7 @@
                   </div>
                   <div class="description">
                     <p>Lorem ipsum dolor ut sit ame dolore  adipiscing elit, sed nonumy nibh sed euismod laoreet dolore magna aliquarm erat volutpat 
-Nostrud duis molestie at dolore.</p>
+                      Nostrud duis molestie at dolore.</p>
                   </div>
                   <div class="product-page-options">
                     <div class="pull-left">
@@ -248,19 +246,24 @@ Nostrud duis molestie at dolore.</p>
 
     {% block js %}
   
+<script>
+  $(function () {
+    // Initialize the slider
+    $("#slider-range").slider({
+      range: true,
+      min: 0,
+      max: 500,
+      values: [0, 500], // initial values
+      slide: function (event, ui) {
+        // Update the text input with the current values
+        $("#amount").val("$" + ui.values[0] + " - $" + ui.values[1]);
+      }
+    });
 
-    <script src='assets/plugins/zoom/jquery.zoom.min.js' type="text/javascript"></script><!-- product zoom -->
-    <script src="assets/plugins/bootstrap-touchspin/bootstrap.touchspin.js" type="text/javascript"></script><!-- Quantity -->
-    <script src="assets/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
-    <script src="assets/plugins/rateit/src/jquery.rateit.js" type="text/javascript"></script>
-    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js" type="text/javascript"></script><!-- for slider-range -->
-
-    <script type="text/javascript">
-        jQuery(document).ready(function() {
-            Layout.initUniform();
-            Layout.initSliderRange();
-        });
-    </script>
+    // Set the initial values in the text input
+    $("#amount").val("$0 - $500")
+  });
+</script>
     <!-- END PAGE LEVEL JAVASCRIPTS -->
 {% endblock js %}
 <!-- END BODY -->

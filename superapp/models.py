@@ -2,8 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User
 import uuid
 
+
 class Customer(models.Model):
-    user = models.OneToOneField(User,on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     email = models.EmailField(max_length=254)
 
@@ -31,33 +32,31 @@ class Product(models.Model):
                             eleifend rhoncus. Nulla et felis sit amet arcu laoreet rhoncus ac id eros. Nulla at enim eu lacus
                             viverra viverra. Curabitur leo tellus, congue ut imperdiet quis, porta sed diam. Curabitur pretium
                             convallis faucibus. Nunc nec sem quis orci convallis pretium id in tellus""")
-    
+
     def generate_unique_code():
         unique_code = str(uuid.uuid4().hex)[:8]  # Use the first 8 characters of the hexadecimal UUID
         return unique_code
-    
-    reference = models.CharField(max_length=100,default=str(generate_unique_code()))
+
+    reference = models.CharField(max_length=100, default=str(generate_unique_code()))
     cat_choices = [
-        (1,"MAN"),
-        (2,"WOMAN"),
-        (3,"KIDS"),
-        (4,"OTHER"),
+        ("MAN", "MAN"),
+        ("WOMAN", "WOMAN"),
+        ("KIDS", "KIDS"),
+        ("OTHER", "OTHER"),
     ]
 
-
-    category = models.IntegerField(choices=cat_choices)
+    category = models.CharField(choices=cat_choices, max_length=50)
     sub_choices = [
-        (1,"Footwear"),
-        (2,"Clothes"),
-        (3,"Accessories"),
-        (4,"Clearance"),
-        (5,'Technology'),
-        (6,'Sports'),
-        (7,'Toy'),
+        ("Footwear", "Footwear"),
+        ("Clothes", "Clothes"),
+        ("Accessories", "Accessories"),
+        ("Clearance", "Clearance"),
+        ('Technology', 'Technology'),
+        ('Sports', 'Sports'),
+        ('Toy', 'Toy'),
     ]
-    sub_category = models.IntegerField(choices=sub_choices)
+    sub_category = models.CharField(choices=sub_choices, max_length=50)
     image = models.ImageField(upload_to='product_images', blank=True)
-
 
     @property
     def imageURL(self):
@@ -66,9 +65,9 @@ class Product(models.Model):
             url = self.image.url
         except:
             url = ''
-        
+
         return url
-    
+
     @property
     def quantity(self):
         item = OrderItem.objects.get(product=self)
@@ -76,14 +75,13 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
-    
 
 
 class Order(models.Model):
     order_id = models.AutoField(primary_key=True)
-    customer = models.ForeignKey(Customer,on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     transaction_id = models.CharField(max_length=100)
-    update = models.CharField(max_length=1000,default="Order Pending!")
+    update = models.CharField(max_length=1000, default="Order Pending!")
     complete = models.BooleanField(default=False)
 
     def __str__(self):
@@ -96,30 +94,30 @@ class Order(models.Model):
         for item in orderitems:
             total = total+item.quantity
         return int(total)
-    
+
     @property
     def cart_total_price(self):
         total = 0.0
         orderItems = self.orderitem_set.all()
         for item in orderItems:
             total = total + (float(item.product.price)*item.quantity)
-        return round(total,2)
+        return round(total, 2)
 
 
 class OrderItem(models.Model):
     items_id = models.AutoField(primary_key=True)
-    order = models.ForeignKey(Order,on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.FloatField()
     date_added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return F"{self.product} : {int(self.quantity)}"
-    
+
     @property
     def total_price(self):
         total = self.quantity*float(self.product.price)
-        return round(total,2)
+        return round(total, 2)
 
 
 class Countries(models.Model):

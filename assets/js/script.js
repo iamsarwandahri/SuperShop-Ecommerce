@@ -1,105 +1,103 @@
-$('.add2cart').on('click',function(){
-    
-    var action = $(this).data('action')
-    var id = $(this).data('id')
-    console.log('Action',action,'ID',id)
+$('.add2cart').on('click', function (){
+  
+  var action = $(this).data('action')
+  var id = $(this).data('id')
+  console.log('Action', action, 'ID', id)
+  
+  value = 0
+  //adding no of items if acion is add items
+  if (action === 'additems') {
+    value = $('#add-quantity' + id).val()
+    console.log("Value", value)
+  }
 
-    value = 0
-
-    //adding no of items if acion is add items
-    if(action==='additems'){
-    value = $('#add-quantity'+id).val()
-    console.log("Value",value)
-    }
-
-    //If user os logged in
-    if (user!='AnonymousUser'){
-        updateCart(action,id,value)
-    }
-    else{
-        updateCartCookies(action,id,value)
-    }
+  //If user os logged in
+  if (user != 'AnonymousUser') {
+    updateCart(action, id, value)
+  }
+  else {
+    updateCartCookies(action, id, value)
+  }
 })
 
 
 
-function updateCart(action,id,value){
+function updateCart(action, id, value) {
 
-    $.ajax({
-        type: "POST",
-        url: "/update_items/",
-        data: JSON.stringify({'action':action,'id':id,'value':value}),
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrftoken,
-        },
+  $.ajax({
+    type: "POST",
+    url: "/update_items/",
+    data: JSON.stringify({ 'action': action, 'id': id, 'value': value }),
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrftoken,
+    },
 
-        success: function (data) {
-            console.log("Data:",data)
+    success: function (data) {
+      console.log("Data:", data)
 
-            $('#cart_total_price').html('Total: $'+data['cart_total_price'])
-            $('#cart_total_items').html('Items: '+data['cart_total_items'])
-            
-            image = data['image']
-            quantity= data['quantity']
-            product = data['name']
-            total_price = data['total_price']
-            console.log('remove',data['remove'])
-            console.log('add',data['add'])
+      $('#cart_total_price').html('Total: $' + data['cart_total_price'])
+      $('#cart_total_items').html('Items: ' + data['cart_total_items'])
 
-
-            //Updating Shopping cart Page
-            if($('#shopping_cart_product_quantity'+id).val()!=undefined){
-                    quantity = data['quantity']
-                    shopping_cart_total_price = data['cart_total_price']
-                    shopping_cart_total_price_ = data['cart_total_price']+3.0
-                    shopping_cart_item_total_price = data['total_price'].toFixed(2)
-                $('#shopping_cart_product-quantity'+id).val(quantity)
-                $('#shopping_cart_total_price').html('$'+shopping_cart_total_price)
-                $('#shopping_cart_total_price_').html('$'+shopping_cart_total_price_.toFixed(2))
-                $('#shopping_cart_item_total_price'+id).html('$'+shopping_cart_item_total_price)
-                
-                if(quantity==0){
-                $('#shopping_cart_item_row'+id).remove()
-                }
-              }
-
-              add = data['add']
-              remove = data['remove']
+      image = data['image']
+      quantity = data['quantity']
+      product = data['name']
+      total_price = data['total_price']
+      console.log('remove', data['remove'])
+      console.log('add', data['add'])
 
 
-              if($('#item'+id).val()!=undefined && quantity>0){
-                $('#item_quantity'+id).html('x'+quantity)
-                $('#item_price'+id).html(total_price)
-              }
+      //Updating Shopping cart Page
+      if ($('#shopping_cart_product_quantity' + id).val() != undefined) {
+        quantity = data['quantity']
+        shopping_cart_total_price = data['cart_total_price']
+        shopping_cart_total_price_ = data['cart_total_price'] + 3.0
+        shopping_cart_item_total_price = data['total_price'].toFixed(2)
+        $('#shopping_cart_product-quantity' + id).val(quantity)
+        $('#shopping_cart_total_price').html('$' + shopping_cart_total_price)
+        $('#shopping_cart_total_price_').html('$' + shopping_cart_total_price_.toFixed(2))
+        $('#shopping_cart_item_total_price' + id).html('$' + shopping_cart_item_total_price)
 
-              else if(quantity==0){
-                $('#scroll_cart'+id).remove()
+        if (quantity == 0) {
+          $('#shopping_cart_item_row' + id).remove()
+        }
+      }
 
-              }
-              else{
-                var item = `<li id="scroll_cart`+id+`">
-                <a href="{% url 'item' id=`+id+` %}"><img src=`+image+` alt="Rolex Classic Watch" width="37" height="34"></a>
-                <span id="item_quantity`+id+`" class="cart-content-count">x`+quantity+`</span>
-                <strong><a id="item`+id+`" href="{% url 'item' id=`+id+` %}">`+product+`</a></strong>
-                <em id="total_price`+id+`">`+total_price+`</em>
+      add = data['add']
+      remove = data['remove']
+
+
+      if ($('#item' + id).val() != undefined && quantity > 0) {
+        $('#item_quantity' + id).html('x' + quantity)
+        $('#item_price' + id).html(total_price)
+      }
+
+      else if (quantity == 0) {
+        $('#scroll_cart' + id).remove()
+
+      }
+      else {
+        var item = `<li id="scroll_cart` + id + `">
+                <a href="{% url 'item' id=`+ id + ` %}"><img src=` + image + ` alt="Rolex Classic Watch" width="37" height="34"></a>
+                <span id="item_quantity`+ id + `" class="cart-content-count">x` + quantity + `</span>
+                <strong><a id="item`+ id + `" href="{% url 'item' id=` + id + ` %}">` + product + `</a></strong>
+                <em id="total_price`+ id + `">` + total_price + `</em>
                 <a href="javascript:void(0);" class="del-goods">&nbsp;</a>
                 </li>`
-                    $('#scroller').append(item)
-              }
+        $('#scroller').append(item)
+      }
 
-            console.log("ITEM:",$('#scroll_cart'+id).val())
-            console.log("VALUE: ",$('#item'+id).val())
-              
+      console.log("ITEM:", $('#scroll_cart' + id).val())
+      console.log("VALUE: ", $('#item' + id).val())
 
-        }
-    })    
+
+    }
+  })
 }
 
-function updateCartCookies(action,id,value){
-    console.log("USER NOT LOGGED IN")
+function updateCartCookies(action, id, value) {
+  console.log("USER NOT LOGGED IN")
 }
-
 
 
 
@@ -107,36 +105,38 @@ function updateCartCookies(action,id,value){
 
 var newBox = $('#newbox');
 var saleBox = $('#salebox');
-var pagerun = false 
+var pagerun = false
 
 // Add event listeners to check the status when the checkboxes are clicked
-newBox.add(saleBox).on('change', function() {
-    checkCheckboxStatus();
+newBox.add(saleBox).on('change', function () {
+  checkCheckboxStatus();
 },
 
-function checkCheckboxStatus() {
+  function checkCheckboxStatus() {
     pagerun = false
     var newChecked = newBox.prop('checked');
     var saleChecked = saleBox.prop('checked');
     var itemsPerPage = parseInt($('.selectItemNo').find(":selected").text());
     var itemsOrder = $('.selectOrder').find(":selected").text();
+    var searchBox = $('#searchBox').val()
     
     numbers = rangeValues()
     value1 = numbers[0]
     value2 = numbers[1]
-    
+
     console.log('CHECKBOX')
-    console.log("NUMBERS: ",numbers)
-    console.log('ItemsPerPage: ',itemsPerPage)
-    console.log('ItemsOrder: ',itemsOrder)
+    console.log("SearchBOX",searchBox)
+    console.log("NUMBERS: ", numbers)
+    console.log('ItemsPerPage: ', itemsPerPage)
+    console.log('ItemsOrder: ', itemsOrder)
 
     if (newChecked && saleChecked) {
-      
+
       console.log('Both checkboxes are checked');
-    
+
     } else if (newChecked) {
       console.log('New is checked');
-    }else if(saleChecked) {
+    } else if (saleChecked) {
       console.log('Sale is checked');
     }
     else {
@@ -144,132 +144,137 @@ function checkCheckboxStatus() {
     }
 
     $.ajax({
-    type:'POST',
-    url: '/product_list/',
-    data:JSON.stringify({'value1':value1,'value2':value2,'newChecked':newChecked,'saleChecked':saleChecked,'itemsPerPage':itemsPerPage,'itemsOrder':itemsOrder,'source':'filter'}),
-    headers: {
+      type: 'POST',
+      url: '/product_list/',
+      data: JSON.stringify({'searchBox':searchBox, 'value1': value1, 'value2': value2, 'newChecked': newChecked, 'saleChecked': saleChecked, 'itemsPerPage': itemsPerPage, 'itemsOrder': itemsOrder, 'source': 'filter' }),
+      headers: {
         'Content-Type': 'application/json',
         'X-CSRFToken': csrftoken,
-    },
-    success: function(data){
+      },
+      success: function (data) {
 
-      if(data){
-        itemsUpdate(data) }
-    },//success
+        if (data) {
+          itemsUpdate(data)
+        }
+      },//success
 
     })//ajax
   });
 
-  // GETTING THE PRICE RANGE OF SLIDER AND THEN DISPLAYING THE ITEMS IN RANGE
+// GETTING THE PRICE RANGE OF SLIDER AND THEN DISPLAYING THE ITEMS IN RANGE
 
-    var value1 = 0
-    var value2 = 500
+var value1 = 0
+var value2 = 500
 $("#slider-range").slider({
-      range: true,
-      min: value1,
-      max: value2,
-      values: [value1, value2], // initial values
-      slide: function(event, ui) {
-        value1 = parseFloat(ui.values[0])
-        value2 = parseFloat(ui.values[1])
+  range: true,
+  min: value1,
+  max: value2,
+  values: [value1, value2], // initial values
+  slide: function (event, ui) {
+    value1 = parseFloat(ui.values[0])
+    value2 = parseFloat(ui.values[1])
 
-        // Update the text input with the current values
-        $("#amount").val('$' + value1 + " - " + '$' + value2); },
+    // Update the text input with the current values
+    $("#amount").val('$' + value1 + " - " + '$' + value2);
+  },
 
-      stop:function(event, ui){
-        value1 = parseFloat(ui.values[0])
-        value2 = parseFloat(ui.values[1])
-        var newChecked = newBox.prop('checked');
-        var saleChecked = saleBox.prop('checked');
-        var itemsPerPage = parseInt($('.selectItemNo').find(":selected").text());
-        var itemsOrder = $('.selectOrder').find(":selected").text();
-        
-        console.log('Slider')
-        console.log("Numbers: [",value1,value2,']')
-        console.log('ItemsPerPage: ',itemsPerPage)
-        console.log('ItemsOrder: ',itemsOrder)
-        console.log('NewChecked: ',newChecked)
-        console.log('saleChecked: ',saleChecked)
+  stop: function (event, ui) {
+    value1 = parseFloat(ui.values[0])
+    value2 = parseFloat(ui.values[1])
+    var newChecked = newBox.prop('checked');
+    var saleChecked = saleBox.prop('checked');
+    var itemsPerPage = parseInt($('.selectItemNo').find(":selected").text());
+    var itemsOrder = $('.selectOrder').find(":selected").text();
+    searchBox = $('#searchBox').val()
 
-        $.ajax({
-          type:'POST',
-          url: '/product_list/',
-          data: JSON.stringify({'value1':value1,'value2':value2,'newChecked':newChecked,'saleChecked':saleChecked,'itemsPerPage':itemsPerPage,'itemsOrder':itemsOrder,'source':'slider_range'}),
-          headers: {
-              'Content-Type': 'application/json',
-              'X-CSRFToken': csrftoken,
-          },
-          success: function(data){
-            if(data){
-                pagerun = false
-                itemsUpdate(data)
-            }
-    }//success
-  })//AJAX
-},//STOP
+    console.log('Slider')
+    console.log("Numbers: [", value1, value2, ']')
+    console.log('ItemsPerPage: ', itemsPerPage)
+    console.log('ItemsOrder: ', itemsOrder)
+    console.log('NewChecked: ', newChecked)
+    console.log('saleChecked: ', saleChecked)
+
+    $.ajax({
+      type: 'POST',
+      url: '/product_list/',
+      data: JSON.stringify({'searchBox':searchBox, 'value1': value1, 'value2': value2, 'newChecked': newChecked, 'saleChecked': saleChecked, 'itemsPerPage': itemsPerPage, 'itemsOrder': itemsOrder, 'source': 'slider_range' }),
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken,
+      },
+      success: function (data) {
+        if (data) {
+          pagerun = false
+          itemsUpdate(data)
+        }
+      }//success
+    })//AJAX
+  },//STOP
 });//SLIDER
 
 
 
 
-    // GRTTING THE VALUE OF OPTION AND DISPLAYING ITEMS ACCORDING TO IT
-$(".selectOption").on("change", function() {
+// GRTTING THE VALUE OF OPTION AND DISPLAYING ITEMS ACCORDING TO IT
+$(".selectOption").on("change", function () {
 
   // Get the selected option using val()
-  var value = $(this).val();  
+  var value = $(this).val();
   // Get the selected option's text using :selected
   var text = $(this).find(":selected").text();
-    
+
   pagerun = false
   var newChecked = newBox.prop('checked');
   var saleChecked = saleBox.prop('checked');
   numbers = rangeValues()
   value1 = numbers[0]
   value2 = numbers[1]
+  searchBox = $('#searchBox').val()
 
-  if(text.length<4){
+  if (text.length < 4) {
     itemsPerPage = parseInt(text)
     itemsOrder = $('.selectOrder').find(":selected").text();
   }
-  else{
-      itemsPerPage = $('.selectItemNo').find(":selected").text();
-      itemsOrder = text
+  else {
+    itemsPerPage = $('.selectItemNo').find(":selected").text();
+    itemsOrder = text
   }
 
   console.log('SELECT OPTION')
-  console.log("NUMBERS: ",numbers)
-  console.log('ItemsPerPage: ',itemsPerPage)
-  console.log('ItemsOrder: ',itemsOrder)
+  console.log("NUMBERS: ", numbers)
+  console.log('ItemsPerPage: ', itemsPerPage)
+  console.log('ItemsOrder: ', itemsOrder)
 
   // // Log the selected value and text
   // console.log("Selected Value: " + value);
   // console.log("Selected Text: " + text);
 
   $.ajax({
-  type: 'POST',
-  url:'/product_list/',
-  data:JSON.stringify({'newChecked':newChecked,'saleChecked':saleChecked,'itemsPerPage':itemsPerPage,'itemsOrder':itemsOrder,'value1':value1,'value2':value2,'source':'selectOption'}),
-  headers:{
-          'Content-Type': 'application/json',
-          'X-CSRFToken': csrftoken,
-        },
+    type: 'POST',
+    url: '/product_list/',
+    data: JSON.stringify({'searchBox':searchBox, 'newChecked': newChecked, 'saleChecked': saleChecked, 'itemsPerPage': itemsPerPage, 'itemsOrder': itemsOrder, 'value1': value1, 'value2': value2, 'source': 'selectOption' }),
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrftoken,
+    },
 
-  success: function(data){
-    if(data){
-      itemsUpdate(data) }
-}//success
-})//AJAX
+    success: function (data) {
+      if (data) {
+        itemsUpdate(data)
+      }
+    }//success
+  })//AJAX
 });//SELECT OPTION
 
 
 var page_no = 1
-var pages = 1 
+var pages = 1
 
-$(document).on('click', '.page', function (){
+$(document).on('click', '.page', function () {
 
   pagerun = true
   page_no = parseInt($(this).text())
-  console.log("Page NO:",page_no)
+  console.log("Page NO:", page_no)
 
   newChecked = $('#newbox').is(':checked');
   saleChecked = $('#salebox').is(':checked');
@@ -279,108 +284,107 @@ $(document).on('click', '.page', function (){
   numbers = rangeValues()
   value1 = numbers[0]
   value2 = numbers[1]
-  console.log("NUMBERS: ",numbers)
+  console.log("NUMBERS: ", numbers)
+  searchBox = $('#searchBox').val()
 
   $.ajax({
-  type:'POST',
-  url: '/product_list/',
-  data:JSON.stringify({'value1':value1,'value2':value2,'saleChecked':saleChecked,'newChecked':newChecked, 'page_no':page_no,'itemsPerPage':itemsPerPage,'itemsOrder':itemsOrder,'source':'page_filter'}),
-  headers: {
+    type: 'POST',
+    url: '/product_list/',
+    data: JSON.stringify({'searchBox':searchBox, 'value1': value1, 'value2': value2, 'saleChecked': saleChecked, 'newChecked': newChecked, 'page_no': page_no, 'itemsPerPage': itemsPerPage, 'itemsOrder': itemsOrder, 'source': 'page_filter' }),
+    headers: {
       'Content-Type': 'application/json',
       'X-CSRFToken': csrftoken,
-  },
-  success: function(data){
+    },
+    success: function (data) {
 
-    pages = Math.ceil(data[0]['totalItems']/itemsPerPage)
-    console.log("Pages:",pages)
-    itemsUpdate(data,page_no,pages)
+      pages = Math.ceil(data[0]['totalItems'] / itemsPerPage)
+      console.log("Pages:", pages)
+      itemsUpdate(data, page_no, pages)
 
-  },//success
+    },//success
 
   })//ajax 
 
 })//CLICK
 
 
-$('#search').on('click', function(){
+$('#search').on('click', function () {
 
   pagerun = false
   searchBoxValue = $('#searchBox').val()
-  if (searchBoxValue == undefined){
-    searchBoxValue = $('#searchBox2').val()
-  }
 
-  console.log("SEARCH CLICKED:",searchBoxValue)
+  console.log("SEARCH CLICKED:", searchBoxValue)
 
-  if(searchBoxValue!=undefined)
-  $.ajax({
-    type:'POST',
-    url:'/search_result/',
-    data:JSON.stringify({'searchBoxValue':searchBoxValue,'source':'search'}),
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': csrftoken,
-  },
-    success: function(data){
+  if (searchBoxValue != undefined)
+    $.ajax({
+      type: 'POST',
+      url: '/search_result/',
+      data: JSON.stringify({ 'searchBoxValue': searchBoxValue, 'source': 'search' }),
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken,
+      },
+      success: function (data) {
 
-      console.log(data.length)
+        console.log(data.length)
 
-      if(data.length>0){
-        $('#searchedFor').html("<em>"+data[0]['totalItems']+"</em>: Search Results for <em>"+searchBoxValue+"</em>")
-      }else{
-        $('#searchedFor').html("<em>NO</em> Search Results for <em>"+searchBoxValue+"</em>")
-      }
-      $('.sidebarul').addClass('hidden')
-      $('#plist-store').removeClass('active')
-      $('#plist-search').removeClass('hidden')
-      itemsUpdate(data)
-  },//success
+        if (data.length > 0) {
+          $('#searchedFor').html("<em>" + data[0]['totalItems'] + "</em>: Search Results for <em>" + searchBoxValue + "</em>")
+        } else {
+          $('#searchedFor').html("<em>NO</em> Search Results for <em>" + searchBoxValue + "</em>")
+        }
+        $('.sidebarul').addClass('hidden')
+        $('#plist-store').removeClass('active')
+        $('#plist-search').removeClass('hidden')
+        itemsUpdate(data)
+      },//success
 
-  })//AJAX
+    })//AJAX
 
 })//SEARCH
 
 
 
-function itemsUpdate(data,page_no=1,pagess=1){
-console.log(data)
-$('.products-filter').html('')
+function itemsUpdate(data, page_no = 1, pagess = 1) {
+  console.log(data)
+  $('.products-filter').html('')
 
 
-  console.log('totalItems:',data.length)
+  console.log('totalItems:', data.length)
 
   var itemsPerPage = $('.selectItemNo').find(":selected").text();
   display_items = parseInt(itemsPerPage)
 
   var i = 1
 
-  for(d of data){
-      dataAppender(d,i)
-      i++
-      if(i>display_items){ break }}
+  for (d of data) {
+    dataAppender(d, i)
+    i++
+    if (i > display_items) { break }
+  }
 
 
-      if (data.length>0){
-      if(pagerun==true){ pageUpdate(data[0]['totalItems'],page_no,pagess)}
-      
-      else {pageUpdate(data[0]['totalItems'],page_no)   }
-      }
-      else{ 
-        pageUpdate(0,0)
-      }
+  if (data.length > 0) {
+    if (pagerun == true) { pageUpdate(data[0]['totalItems'], page_no, pagess) }
+
+    else { pageUpdate(data[0]['totalItems'], page_no) }
+  }
+  else {
+    pageUpdate(0, 0)
+  }
 
 
 }// Function
 
 
-function dataAppender(d,i){
+function dataAppender(d, i) {
 
-    id = d['id']
-    name = d['name']
-    image = d['image']
-    price = d['price']
+  id = d['id']
+  name = d['name']
+  image = d['image']
+  price = d['price']
 
-    item = `<div class="col-md-4 col-sm-6 col-xs-12">
+  item = `<div class="col-md-4 col-sm-6 col-xs-12">
       <div class="product-item">
       <div class="pi-img-wrapper">
       <img src=${image} class="img-responsive" alt="${name}">
@@ -395,52 +399,52 @@ function dataAppender(d,i){
       </div>
       </div>`
 
-      if(i%3==1){
-        item = `<div class="row product-list"></div>`+item
-      }
+  if (i % 3 == 1) {
+    item = `<div class="row product-list"></div>` + item
+  }
 
-      if(d['sale']){
-      item = item.slice(0,-6)+'<div class="sticker sticker-sale"></div></div>'
-      }// SALE
+  if (d['sale']) {
+    item = item.slice(0, -6) + '<div class="sticker sticker-sale"></div></div>'
+  }// SALE
 
-      if(d['new']){
-      item = item.slice(0,-6)+'<div class="sticker sticker-new"></div>'
-      }// NEw
+  if (d['new']) {
+    item = item.slice(0, -6) + '<div class="sticker sticker-new"></div>'
+  }// NEw
 
-      $('.products-filter').append(item)
+  $('.products-filter').append(item)
 }//DataAppender
 
-function pageUpdate(items,page_no,pagess=1){
+function pageUpdate(items, page_no, pagess = 1) {
 
-var text = $('.selectItemNo').find(":selected").text();
-display_items = parseInt(text)
-console.log('pagerun:',pagerun)
-if(pagerun==false){
-pages = Math.ceil(items/display_items)
-console.log('pages:',pages)
+  var text = $('.selectItemNo').find(":selected").text();
+  display_items = parseInt(text)
+  console.log('pagerun:', pagerun)
+  if (pagerun == false) {
+    pages = Math.ceil(items / display_items)
+    console.log('pages:', pages)
 
-}else{
-  pages = pagess
-}
-
-$('.pagination').html('')
-$('.pagination').append('<li><a href="javascript:;">&laquo;</a></li>')
-for(var i=1; i<=pages;  i++){
-
-  if(i==page_no){
-    $('.pagination').append('<li class="page" id="page'+i+'"><span>'+i+'</span></li>')
+  } else {
+    pages = pagess
   }
-  else{
-    $('.pagination').append('<li class="page" id="page'+i+'"><a>'+i+'</a></li>')
+
+  $('.pagination').html('')
+  $('.pagination').append('<li><a href="javascript:;">&laquo;</a></li>')
+  for (var i = 1; i <= pages; i++) {
+
+    if (i == page_no) {
+      $('.pagination').append('<li class="page" id="page' + i + '"><span>' + i + '</span></li>')
+    }
+    else {
+      $('.pagination').append('<li class="page" id="page' + i + '"><a>' + i + '</a></li>')
+    }
   }
-}
-$('.pagination').append('<li><a href="javascript:;">&raquo;</a></li>')
-$('#currentPage').html(page_no)
-$('#totalPages').html(pages)
+  $('.pagination').append('<li><a href="javascript:;">&raquo;</a></li>')
+  $('#currentPage').html(page_no)
+  $('#totalPages').html(pages)
 
 }//pageUpdater
 
-function rangeValues(){
+function rangeValues() {
   var currentValue = $("#amount").val();
   console.log("Selected value:", currentValue);
 
@@ -448,10 +452,10 @@ function rangeValues(){
   var matches = currentValue.match(/\d+/g);
 
   // Convert the matched strings to numbers
-  var numbers = matches.map(function(match) {
+  var numbers = matches.map(function (match) {
     return parseInt(match, 10);
   });
 
   return numbers;
-  
+
 }//rangeValues
