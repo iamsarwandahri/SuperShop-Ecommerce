@@ -41,7 +41,7 @@ class Product(models.Model):
         (1,"MAN"),
         (2,"WOMAN"),
         (3,"KIDS"),
-        (4,"OTHER")
+        (4,"OTHER"),
     ]
 
 

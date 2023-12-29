@@ -5,7 +5,7 @@ def common_data(request):
 
     all_products = Product.objects.all()
     products_new = Product.objects.filter(new=True)
-    
+
     if request.user.is_authenticated:
         customer = request.user.customer
         

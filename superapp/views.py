@@ -2,8 +2,6 @@ from django.shortcuts import render
 from superapp.models import *
 import json
 from django.http import JsonResponse
-from django.db.models.functions import Length
-
 
 def base(request):
 
@@ -41,12 +39,6 @@ def kids(request):
 
     products = Product.objects.filter(category=3)
 
-    # item = OrderItem.objects.filter(product=product)
-    # if item.exists():
-    #     item = item.first()
-    # else:
-    #     item = 0
-
     item = []
     context={'products':products,'item':item}
     return render(request,'kids.html',context)
@@ -74,64 +66,153 @@ def faq(request):
 def goods_compare(request):
     return render(request,'goods-compare.html')
 
-def index_header_fix(request):
-    return render(request,'index-header-fix.html')
-
-def index_light_footer(request):
-    return render(request,'index-light-footer.html')
-
 def privacy_policy(request):
     return render(request,'privacy-policy.html')
 
 from django.db.models import Q
-from django.forms.models import model_to_dict
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import math
 
-def product_list(request):
+
+def search(text,product):
+    find = False
+    text = text.lower()
+    if text in product.name.lower() or text in product.desc.lower():
+        find = True
+    return find
+
+def product_list(request,page=1):
+    
     products = Product.objects.all()
+    items = Product.objects.all()
+    paginator = Paginator(items, 10)   # 10 items per page
+
+    try:
+        current_page = paginator.page(page)
+    except PageNotAnInteger:
+        current_page = paginator.page(1)
+    except EmptyPage:
+        current_page = paginator.page(paginator.num_pages)
+
+
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
+            source = data.get('source')
             newChecked = data['newChecked']
             saleChecked = data['saleChecked']
-
-            # print(newChecked,saleChecked)
+            value1 = data.get('value1')
+            value2 = data.get('value2')
+            itemsperPage = data['itemsPerPage']
+            itemsOrder = data['itemsOrder']
+            print('source:',source)
+                
 
             if(newChecked and saleChecked):
-                products = Product.objects.filter(Q(new=True) | Q(sale=True))
-
+                products = Product.objects.filter(new=True,sale=True)
 
             elif(newChecked):
                 products = Product.objects.filter(new=True)
 
             elif(saleChecked):
-                products = Product.objects.filter(new=True)
-            
+                products = Product.objects.filter(sale=True)
+
+            products = products.filter(price__gte=value1,price__lte=value2)
+                
+            if itemsOrder.lower() == 'name (a - z)':
+                products = products.order_by('name')
+            elif itemsOrder.lower() == 'name (z - a)':
+                products = products.order_by('-name')
+            elif itemsOrder.lower() == 'price (low > high)':
+                products = products.order_by('price')
+            elif itemsOrder.lower() == 'price (high > low)':
+                products = products.order_by('-price')
+
+            totalProducts = products
+
             product_list = []
-            if products.exists():
+            if products.exists() and source!='page_filter':
                 for product in products:
                     product_list.append({
-                        'id':product.id,
-                        'name':product.name,
-                        'price': product.price,
-                        'image': product.imageURL,
-                        'sale':product.sale,
-                        'new':product.new,
-                         })
+                            'id':product.id,
+                            'name':product.name,
+                            'price': product.price,
+                            'image': product.imageURL,
+                            'sale':product.sale,
+                            'new':product.new,
+                            'totalItems':len(totalProducts)
+                            })
+            
+            elif source == 'page_filter':
+                page_no = data.get('page_no')
+
+                # products = totalProducts.filter(id__gt=(itemsperPage)*(page_no-1),id__lte=(itemsperPage)*(page_no))
+
+                i = 1
+                for product in products:
+                    if i<=page_no*itemsperPage and i>(page_no-1)*itemsperPage:
+                            product_list.append({
+                                'id':product.id,
+                                'name':product.name,
+                                'price': product.price,
+                                'image': product.imageURL,
+                                'sale':product.sale,
+                                'new':product.new,
+                                'totalItems':len(totalProducts)
+                            })
+                    i=i+1
+                    
 
             return JsonResponse(product_list,safe=False)
 
         except Exception as e:
             print(e)
 
-    context = {'products':products}
+    context = {'products':products,'items':current_page}
         
     return render(request,'product-list.html',context)
 
-def search_result(request):
-    return render(request,'search-result.html')
+def search_result(request,page=1):
+    products = Product.objects.all()
+    product_list = []
+    message = ''
 
-def shopping_cart_null(request):
-    return render(request,'shopping_cart-null.html')
+    if request.method=='POST':
+            searchItem = request.POST['searchBox']
+
+            if len(searchItem)>3:
+                for product in products:
+                    if search(searchItem,product):
+                        product_list.append({
+                        'id':product.id,
+                        'name':product.name,
+                        'price': product.price,
+                        'imageURL': product.imageURL,
+                        'sale':product.sale,
+                        'new':product.new,
+                    })
+                
+            if len(product_list)>0:
+                product_list[0]['totalItems'] = len(product_list)
+            message = searchItem
+
+
+            # return JsonResponse(product_list,safe=False)
+                
+            print(product_list)
+
+    paginator = Paginator(product_list, 10)   # 10 items per page
+    try:
+        current_page = paginator.page(page)
+    except PageNotAnInteger:
+        current_page = paginator.page(1)
+    except EmptyPage:
+        current_page = paginator.page(paginator.num_pages)
+            
+    context = {'products':product_list,'items':current_page,
+               'message':message}
+    return render(request,'search-result.html',context)
+
 
 def shopping_cart(request):
     return render(request,'shopping-cart.html')
@@ -226,61 +307,3 @@ def update_items(request):
             return JsonResponse("ERROR",safe=False)
     
     return JsonResponse("Item was added", safe=False)
-
-
-
-def price_filter(request):
-
-    product_list = []
-    value1 = 0
-    value2 = 500
-    sort_by = 'name'
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            source = data.get('source')
-            print(source)
-            print('Bame ')
-            
-            if source == 'price_range':
-                value1 = data.get('value1')
-                value2 = data.get('value2')
-                print(value1,value2)
-
-                print(value1,value2)
-                products = Product.objects.filter(price__gt=value1,price__lt=value2)
-
-            elif source == 'display_order':
-                sort_by = data.get('sort_by')
-
-                if len(sort_by)<4:
-                    number = int(sort_by)
-
-                    products = Product.objects.filter(id__lt=number+1)
-
-                elif sort_by.lower() == 'name (a - z)':
-                    products = Product.objects.order_by('name')
-                elif sort_by.lower() == 'name (z - a)':
-                    products = Product.objects.order_by('-name')
-                elif sort_by.lower() == 'price (low > high)':
-                    products = Product.objects.order_by('price')
-                elif sort_by.lower() == 'price (high > low)':
-                    products = Product.objects.order_by('-price')
-                else:
-                    products = Product.objects.all()
-
-            for product in products:
-                product_list.append({
-                'id':product.id,
-                'name':product.name,
-                'price':product.price,
-                'image':product.imageURL,
-                'new':product.new,
-                'sale':product.sale,
-                })
-
-
-        except Exception as e:
-            print(e)
-
-    return JsonResponse(product_list,safe=False)

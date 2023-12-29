@@ -12,5 +12,11 @@ def mod(value,dividedby):
         return True
     else:
         return False
+    
+
+@register.filter
+def myrange(value):
+    return range(value)
+
 
 
