@@ -1,8 +1,9 @@
-from django.shortcuts import render
-from superapp.models import Product, OrderItem, Order, Countries
+from django.shortcuts import render, redirect
+from superapp.models import Product, OrderItem, Order, Countries, Contact, Checkout
 import json
 from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from datetime import datetime
 
 
 def base(request):
@@ -23,67 +24,6 @@ def index(request):
 
         }
     return render(request, 'index.html', context)
-
-
-def item(request, id):
-
-    product = Product.objects.get(id=id)
-
-    item = OrderItem.objects.filter(product=product)
-    if item.exists():
-        item = item.first()
-    else:
-        item = 0
-
-    context = {'product': product, 'item': item}
-    return render(request, 'item.html', context)
-
-
-def kids(request):
-
-    products = Product.objects.filter(category="KIDS")
-    item = []
-    context = {'products': products, 'item': item}
-    return render(request, 'kids.html', context)
-
-
-def about(request):
-    return render(request, 'about.html')
-
-
-def account(request):
-    return render(request, 'account.html')
-
-
-def checkout(request):
-    countries = Countries.objects.all()
-
-    context = {'countries': countries}
-    return render(request, 'checkout.html', context)
-
-
-def contacts(request):
-    return render(request, 'contacts.html')
-
-
-def faq(request):
-    return render(request, 'faq.html')
-
-
-def goods_compare(request):
-    return render(request, 'goods-compare.html')
-
-
-def privacy_policy(request):
-    return render(request, 'privacy-policy.html')
-
-
-def search(text, product):
-    find = False
-    text = text.lower()
-    if text in product.name.lower() or text in product.desc.lower() or text in product.category.lower() or text in product.sub_category.lower():
-        find = True
-    return find
 
 
 def product_list(request, page=1):
@@ -144,6 +84,32 @@ def product_list(request, page=1):
                             'sale': product.sale,
                             'new': product.new,
                             })
+            
+            elif len(searchItem) > 0 and source == 'page_filter':
+                for product in products:
+                    if i <= page_no*itemsperPage and i > (page_no-1)*itemsperPage:
+                        product_list.append({
+                            'id': product.id,
+                            'name': product.name,
+                            'price': product.price,
+                            'image': product.imageURL,
+                            'sale': product.sale,
+                            'new': product.new,
+                            })
+                    i += 1
+                    
+            elif len(searchItem) > 0:
+                for product in products:
+                    if search(searchItem, product):
+                        product_list.append({
+                            'id': product.id,
+                            'name': product.name,
+                            'price': product.price,
+                            'image': product.imageURL,
+                            'sale': product.sale,
+                            'new': product.new,
+                            })
+                totalProducts = product_list
 
             elif source == 'page_filter':
                 page_no = data.get('page_no')
@@ -158,23 +124,11 @@ def product_list(request, page=1):
                             'image': product.imageURL,
                             'sale': product.sale,
                             'new': product.new,
-                            'totalItems': len(totalProducts)
                             })
                     i += 1
-            elif len(searchItem) > 0:
-                for product in products:
-                    if search(searchItem, product):
-                        product_list.append({
-                            'id': product.id,
-                            'name': product.name,
-                            'price': product.price,
-                            'image': product.imageURL,
-                            'sale': product.sale,
-                            'new': product.new,
-                            })
-
+                
             if len(product_list) > 0:
-                product_list[0]['totalItems'] = len(product_list)
+                    product_list[0]['totalItems'] = len(totalProducts)
 
             return JsonResponse(product_list, safe=False)
 
@@ -223,23 +177,21 @@ def search_result(request, page=1):
     return render(request, 'search-result.html', context)
 
 
+def item(request, id):
+
+    product = Product.objects.get(id=id)
+
+    item = OrderItem.objects.filter(product=product)
+    if item.exists():
+        item = item.first()
+    else:
+        item = 0
+
+    context = {'product': product, 'item': item}
+    return render(request, 'item.html', context)
+
+
 def shopping_cart(request):
-    return render(request, 'shopping-cart.html')
-
-
-def standard_forms(request):
-    return render(request, 'standard-forms.html')
-
-
-def terms_conditions(request):
-    return render(request, 'terms-conditions.html')
-
-
-def wishlist(request):
-    return render(request, 'wishlist.html')
-
-
-def update_items(request):
 
     if request.method == 'POST':
         customer = request.user.customer
@@ -313,4 +265,103 @@ def update_items(request):
             print(e)
             return JsonResponse("ERROR", safe=False)
 
-    return JsonResponse("Item was added", safe=False)
+    return render(request, 'shopping-cart.html')
+
+
+def kids(request):
+
+    products = Product.objects.filter(category="KIDS")
+    item = []
+    context = {'products': products, 'item': item}
+    return render(request, 'kids.html', context)
+
+
+def checkout(request):
+    countries = Countries.objects.all()
+
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        if request.method == 'POST':
+            try:
+                data = json.loads(request.body)
+                first_name = data.get('first_name')
+                last_name = data.get('last_name')
+                email = data.get('email')
+                phone = data.get('phone')
+                address = data.get('address')
+                postal_code = data['postal_code']
+                city = data.get('city')
+                state = data.get('state')
+                country = data.get('country')
+                comments = data.get('desc','NO comments')
+                cashOnDelivery = data.get('cashOnDelivery')
+                total = data.get('total')
+
+                checkout = Checkout.objects.create(first_name=first_name, last_name=last_name,
+                                                email=email, phone=phone, address=address,
+                                                postal_code=postal_code, state=state,
+                                                city=city, country=country, comments=comments,
+                                                cashOnDelivery=cashOnDelivery)
+                
+
+                transaction_id = datetime.now().timestamp()
+
+                order = Order.objects.filter(customer=customer)
+                order = order.last()
+                order.complete = True
+                order.transaction_id = transaction_id
+
+
+                if order.cart_total_price == total:
+                    order.save()
+                    checkout.save()
+
+                return JsonResponse("data was added!", safe=False)
+            
+            except Exception as e:
+                print(e)
+    context = {'countries': countries}
+    return render(request, 'checkout.html', context)
+
+
+def about(request):
+    return render(request, 'about.html')
+
+def contact(request):
+
+    if request.method == 'POST':
+        name = request.POST['name']
+        email = request.POST['email']
+        desc = request.POST['textarea']
+
+        contact = Contact.objects.create(name=name, email=email, desc=desc)
+        contact.save()
+        message = "You form is submitted Successfully!"
+        context = {'message': message}
+        return render(request, 'contact.html', context)
+
+    return render(request, 'contact.html')
+
+
+def account(request):
+    return render(request, 'account.html')
+
+
+def faq(request):
+    return render(request, 'faq.html')
+
+
+def privacy_policy(request):
+    return render(request, 'privacy-policy.html')
+
+
+def search(text, product):
+    find = False
+    text = text.lower()
+    if text in product.name.lower() or text in product.desc.lower() or text in product.category.lower() or text in product.sub_category.lower():
+        find = True
+    return find
+
+
+def terms_conditions(request):
+    return render(request, 'terms-conditions.html')

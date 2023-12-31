@@ -2,13 +2,11 @@ $('.add2cart').on('click', function (){
   
   var action = $(this).data('action')
   var id = $(this).data('id')
-  console.log('Action', action, 'ID', id)
   
   value = 0
   //adding no of items if acion is add items
   if (action === 'additems') {
     value = $('#add-quantity' + id).val()
-    console.log("Value", value)
   }
 
   //If user os logged in
@@ -26,7 +24,7 @@ function updateCart(action, id, value) {
 
   $.ajax({
     type: "POST",
-    url: "/update_items/",
+    url: "/shopping_cart/",
     data: JSON.stringify({ 'action': action, 'id': id, 'value': value }),
     headers: {
       'Content-Type': 'application/json',
@@ -34,7 +32,6 @@ function updateCart(action, id, value) {
     },
 
     success: function (data) {
-      console.log("Data:", data)
 
       $('#cart_total_price').html('Total: $' + data['cart_total_price'])
       $('#cart_total_items').html('Items: ' + data['cart_total_items'])
@@ -43,8 +40,6 @@ function updateCart(action, id, value) {
       quantity = data['quantity']
       product = data['name']
       total_price = data['total_price']
-      console.log('remove', data['remove'])
-      console.log('add', data['add'])
 
 
       //Updating Shopping cart Page
@@ -87,10 +82,6 @@ function updateCart(action, id, value) {
         $('#scroller').append(item)
       }
 
-      console.log("ITEM:", $('#scroll_cart' + id).val())
-      console.log("VALUE: ", $('#item' + id).val())
-
-
     }
   })
 }
@@ -124,24 +115,6 @@ newBox.add(saleBox).on('change', function () {
     value1 = numbers[0]
     value2 = numbers[1]
 
-    console.log('CHECKBOX')
-    console.log("SearchBOX",searchBox)
-    console.log("NUMBERS: ", numbers)
-    console.log('ItemsPerPage: ', itemsPerPage)
-    console.log('ItemsOrder: ', itemsOrder)
-
-    if (newChecked && saleChecked) {
-
-      console.log('Both checkboxes are checked');
-
-    } else if (newChecked) {
-      console.log('New is checked');
-    } else if (saleChecked) {
-      console.log('Sale is checked');
-    }
-    else {
-      console.log('Both checkboxes are not checked');
-    }
 
     $.ajax({
       type: 'POST',
@@ -186,13 +159,6 @@ $("#slider-range").slider({
     var itemsPerPage = parseInt($('.selectItemNo').find(":selected").text());
     var itemsOrder = $('.selectOrder').find(":selected").text();
     searchBox = $('#searchBox').val()
-
-    console.log('Slider')
-    console.log("Numbers: [", value1, value2, ']')
-    console.log('ItemsPerPage: ', itemsPerPage)
-    console.log('ItemsOrder: ', itemsOrder)
-    console.log('NewChecked: ', newChecked)
-    console.log('saleChecked: ', saleChecked)
 
     $.ajax({
       type: 'POST',
@@ -240,15 +206,6 @@ $(".selectOption").on("change", function () {
     itemsOrder = text
   }
 
-  console.log('SELECT OPTION')
-  console.log("NUMBERS: ", numbers)
-  console.log('ItemsPerPage: ', itemsPerPage)
-  console.log('ItemsOrder: ', itemsOrder)
-
-  // // Log the selected value and text
-  // console.log("Selected Value: " + value);
-  // console.log("Selected Text: " + text);
-
   $.ajax({
     type: 'POST',
     url: '/product_list/',
@@ -274,7 +231,6 @@ $(document).on('click', '.page', function () {
 
   pagerun = true
   page_no = parseInt($(this).text())
-  console.log("Page NO:", page_no)
 
   newChecked = $('#newbox').is(':checked');
   saleChecked = $('#salebox').is(':checked');
@@ -284,7 +240,6 @@ $(document).on('click', '.page', function () {
   numbers = rangeValues()
   value1 = numbers[0]
   value2 = numbers[1]
-  console.log("NUMBERS: ", numbers)
   searchBox = $('#searchBox').val()
 
   $.ajax({
@@ -298,7 +253,6 @@ $(document).on('click', '.page', function () {
     success: function (data) {
 
       pages = Math.ceil(data[0]['totalItems'] / itemsPerPage)
-      console.log("Pages:", pages)
       itemsUpdate(data, page_no, pages)
 
     },//success
@@ -313,8 +267,6 @@ $('#search').on('click', function () {
   pagerun = false
   searchBoxValue = $('#searchBox').val()
 
-  console.log("SEARCH CLICKED:", searchBoxValue)
-
   if (searchBoxValue != undefined)
     $.ajax({
       type: 'POST',
@@ -326,7 +278,6 @@ $('#search').on('click', function () {
       },
       success: function (data) {
 
-        console.log(data.length)
 
         if (data.length > 0) {
           $('#searchedFor').html("<em>" + data[0]['totalItems'] + "</em>: Search Results for <em>" + searchBoxValue + "</em>")
@@ -346,12 +297,8 @@ $('#search').on('click', function () {
 
 
 function itemsUpdate(data, page_no = 1, pagess = 1) {
-  console.log(data)
+  
   $('.products-filter').html('')
-
-
-  console.log('totalItems:', data.length)
-
   var itemsPerPage = $('.selectItemNo').find(":selected").text();
   display_items = parseInt(itemsPerPage)
 
@@ -418,14 +365,11 @@ function pageUpdate(items, page_no, pagess = 1) {
 
   var text = $('.selectItemNo').find(":selected").text();
   display_items = parseInt(text)
-  console.log('pagerun:', pagerun)
+
   if (pagerun == false) {
     pages = Math.ceil(items / display_items)
-    console.log('pages:', pages)
 
-  } else {
-    pages = pagess
-  }
+  } else { pages = pagess }
 
   $('.pagination').html('')
   $('.pagination').append('<li><a href="javascript:;">&laquo;</a></li>')
@@ -446,12 +390,9 @@ function pageUpdate(items, page_no, pagess = 1) {
 
 function rangeValues() {
   var currentValue = $("#amount").val();
-  console.log("Selected value:", currentValue);
 
-  // Use a regular expression to match numbers in the string
   var matches = currentValue.match(/\d+/g);
 
-  // Convert the matched strings to numbers
   var numbers = matches.map(function (match) {
     return parseInt(match, 10);
   });

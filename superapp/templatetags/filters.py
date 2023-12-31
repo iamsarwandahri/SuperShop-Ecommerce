@@ -19,3 +19,8 @@ def mod(value, dividedby):
 @register.filter
 def myrange(value):
     return range(value)
+
+
+@register.filter
+def addfloat(value, add):
+    return round(float(value+add), 2)

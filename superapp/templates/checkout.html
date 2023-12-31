@@ -6,7 +6,7 @@
 
 <!-- Body BEGIN -->
 {% block body %}
-
+{% load filters %}
     <div class="main">
       <div class="container">
         <ul class="breadcrumb">
@@ -23,7 +23,7 @@
             <div class="panel-group checkout-page accordion scrollable" id="checkout-page">
 
               <!-- BEGIN CHECKOUT -->
-              <div id="checkout" class="panel panel-default">
+              <!-- <div id="checkout" class="panel panel-default">
                 <div class="panel-heading">
                   <h2 class="panel-title">
                     <a data-toggle="collapse" data-parent="#checkout-page" href="#checkout-content" class="accordion-toggle">
@@ -77,11 +77,11 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> -->
               <!-- END CHECKOUT -->
 
               <!-- BEGIN PAYMENT ADDRESS -->
-              <div id="payment-address" class="panel panel-default">
+              <!-- <div id="payment-address" class="panel panel-default">
                 <div class="panel-heading">
                   <h2 class="panel-title">
                     <a data-toggle="collapse" data-parent="#checkout-page" href="#payment-address-content" class="accordion-toggle">
@@ -89,7 +89,7 @@
                     </a>
                   </h2>
                 </div>
-                <div id="payment-address-content" class="panel-collapse collapse">
+                <div id="payment-address-content" class="panel-collapse collapse in">
                   <div class="panel-body row">
                     <div class="col-md-6 col-sm-6">
                       <h3>Your Personal Details</h3>
@@ -109,11 +109,7 @@
                         <label for="phone">Phone <span class="require">*</span></label>
                         <input name="phone" type="tel" id="phone" class="form-control">
                       </div>
-                      <!-- <div class="form-group">
-                        <label for="fax">Fax</label>
-                        <input type="text" id="fax" class="form-control">
-                      </div> -->
-
+                  
                       <h3>Your Password</h3>
                       <div class="form-group">
                         <label for="password">Password <span class="require">*</span></label>
@@ -126,18 +122,11 @@
                     </div>
                     <div class="col-md-6 col-sm-6">
                       <h3>Your Address</h3>
-                      <!-- <div class="form-group">
-                        <label for="company">Company</label>
-                        <input type="text" id="company" class="form-control">
-                      </div> -->
                       <div class="form-group">
                         <label for="address">Address</label>
                         <input name="address" type="text" id="address1" class="form-control">
                       </div>
-                      <!-- <div class="form-group">
-                        <label for="address2">Address 2</label>
-                        <input type="text" id="address2" class="form-control">
-                      </div> -->
+                     
                       <div class="form-group">
                         <label for="city">City <span class="require">*</span></label>
                         <input name="city" type="text" id="city" class="form-control">
@@ -157,7 +146,7 @@
                         </select>
                       </div>
                       
-                      <!-- <div class="form-group">
+                      <div class="form-group">
                         <label for="region-state">Region/State <span class="require">*</span></label>
                         <select class="form-control" id="region-state">
                           <option value=""> --- Please Select --- </option>
@@ -165,7 +154,7 @@
                           <option id="{{country.cody}}" value="{{country.code}}">{{country.name}}</option>
                           {% endfor %}
                         </select>
-                      </div> -->
+                      </div>
 
                       <div class="form-group">
                         <label for="post-code">State <span class="require">*</span></label>
@@ -180,11 +169,7 @@
                           <input type="checkbox"> I wish to subscribe to the OXY newsletter. 
                         </label>
                       </div>
-                      <!-- <div class="checkbox">
-                        <label>
-                          <input type="checkbox" checked="checked"> My delivery and billing addresses are the same.
-                        </label>
-                      </div> -->
+                     
                       <button class="btn btn-primary  pull-right" type="submit" data-toggle="collapse" data-parent="#checkout-page" data-target="#shipping-address-content" id="button-payment-address">Continue</button>
                       <div class="checkbox">
                         <label>
@@ -194,156 +179,99 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> -->
               <!-- END PAYMENT ADDRESS -->
+
+              <!-- FORM -->
+              <form id="checkoutForm" method="POST" action="{% url 'checkout' %}">
+                {% csrf_token %}
+
 
               <!-- BEGIN SHIPPING ADDRESS -->
               <div id="shipping-address" class="panel panel-default">
                 <div class="panel-heading">
                   <h2 class="panel-title">
                     <a data-toggle="collapse" data-parent="#checkout-page" href="#shipping-address-content" class="accordion-toggle">
-                      Step 3: Delivery Details
+                      Step 1: Delivery Details
                     </a>
                   </h2>
                 </div>
-                <div id="shipping-address-content" class="panel-collapse collapse">
+                <div id="shipping-address-content" class="panel-collapse collapse in">
                   <div class="panel-body row">
                     <div class="col-md-6 col-sm-6">
                       <div class="form-group">
                         <label for="firstname-dd">First Name <span class="require">*</span></label>
-                        <input name="firstname-dd" type="text" id="firstname-dd" class="form-control">
+                        <input name="firstname" type="text" id="firstname" class="form-control" required>
                       </div>
                       <div class="form-group">
                         <label for="lastname-dd">Last Name <span class="require">*</span></label>
-                        <input name="lastname-dd" type="text" id="lastname-dd" class="form-control">
+                        <input name="lastname" type="text" id="lastname" class="form-control" required>
                       </div>
                       <div class="form-group">
                         <label for="email-dd">E-Mail <span class="require">*</span></label>
-                        <input name="email-dd" type="email" id="email-dd" class="form-control">
+                        <input name="email" type="email" id="email" class="form-control" required>
                       </div>
                       <div class="form-group">
                         <label for="telephone-dd">Phone <span class="require">*</span></label>
-                        <input name="phone-dd" type="tel" id="telephone-dd" class="form-control">
+                        <input name="phone" type="tel" id="phone" class="form-control" required>
                       </div>
-                      <!-- <div class="form-group">
-                        <label for="fax-dd">Fax</label>
-                        <input type="text" id="fax-dd" class="form-control">
-                      </div> -->
-                      <!-- <div class="form-group">
-                        <label for="company-dd">Company</label>
-                        <input type="text" id="company-dd" class="form-control">
-                      </div> -->
+                      <div class="panel-body row">
+                        <div class="radio-list">
+                          <label>
+                            <input id="delivery-checkbox" name="cashOnDelivery" class="delivery-checkbox" type="checkbox"> Cash On Delivery
+                          </label>
+                        </div>
+                        <div class="form-group">
+                          <label for="delivery-payment-method">Add Comments About Your Order</label>
+                          <textarea name="comments" id="comments" rows="8" class="form-control"></textarea>
+                        </div> 
                     </div>
+                    </div>
+
                     <div class="col-md-6 col-sm-6">
                       <div class="form-group">
                         <label for="address-dd">Address</label>
-                        <input name="address-dd" type="text" id="address-dd" class="form-control">
+                        <input name="address" type="text" id="address" class="form-control" required> 
                       </div>
-                      <!-- <div class="form-group">
-                        <label for="address2-dd">Address 2</label>
-                        <input type="text" id="address2-dd" class="form-control">
-                      </div> -->
                       <div class="form-group">
                         <label for="city-dd">City <span class="require">*</span></label>
-                        <input name="city-dd" type="text" id="city-dd" class="form-control">
+                        <input name="city" type="text" id="city" class="form-control" required>
                       </div>
                       <div class="form-group">
                         <label for="post-code-dd">Post Code <span class="require">*</span></label>
-                        <input name="post-code-dd" type="text" id="post-code-dd" class="form-control">
+                        <input name="post-code" type="text" id="post-code" class="form-control" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="state-dd">State <span class="require">*</span></label>
+                        <input name="state" type="text" id="state" class="form-control">
                       </div>
                       <div class="form-group">
                         <label for="country-dd">Country <span class="require">*</span></label>
-                        <select name="country-dd" class="form-control input-sm" id="country-dd">
+                        <select name="country" class="form-control input-sm" id="country" required>
                           <option value=""> --- Please Select --- </option>
                           {% for country in countries  %}
                           <option id="{{country.cody}}-dd" value="{{country.code}}">{{country.name}}</option>
                           {% endfor %}
                         </select>
                       </div>
-                      <div class="form-group">
-                        <label for="state-dd">State <span class="require">*</span></label>
-                        <input name="state-dd" type="text" id="state-dd" class="form-control">
-                      </div>
-            
                     </div>
-                    <div class="col-md-12">
-                      <button class="btn btn-primary  pull-right" type="submit" id="button-shipping-address" data-toggle="collapse" data-parent="#checkout-page" data-target="#shipping-method-content">Continue</button>
+               
+                    <div class="checkbox col-md-12 pull-right">
+                      <label>
+                        <input id="policy" type="checkbox" required> I have read and agree to the <a title="Terms & Conditions" href="{% url 'terms_conditions' %}">Terms & Conditions </a> &nbsp;&nbsp;&nbsp; 
+                      </label>
                     </div>
-                  </div>
+                </div>
                 </div>
               </div>
               <!-- END SHIPPING ADDRESS -->
-
-              <!-- BEGIN SHIPPING METHOD -->
-              <!-- <div id="shipping-method" class="panel panel-default">
-                <div class="panel-heading">
-                  <h2 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#checkout-page" href="#shipping-method-content" class="accordion-toggle">
-                      Step 4: Delivery Method
-                    </a>
-                  </h2>
-                </div>
-                <div id="shipping-method-content" class="panel-collapse collapse">
-                  <div class="panel-body row">
-                    <div class="col-md-12">
-                      <p>Please select the preferred shipping method to use on this order.</p>
-                      <h4>Flat Rate</h4>
-                      <div class="radio-list">
-                        <label>
-                          <input type="radio" name="FlatShippingRate" value="FlatShippingRate"> Flat Shipping Rate
-                        </label>
-                      </div>
-                      <div class="form-group">
-                        <label for="delivery-comments">Add Comments About Your Order</label>
-                        <textarea id="delivery-comments" rows="8" class="form-control"></textarea>
-                      </div>
-                      <button class="btn btn-primary  pull-right" type="submit" id="button-shipping-method" data-toggle="collapse" data-parent="#checkout-page" data-target="#payment-method-content">Continue</button>
-                    </div>
-                  </div>
-                </div>
-              </div> -->
-              <!-- END SHIPPING METHOD -->
-
-              <!-- BEGIN PAYMENT METHOD -->
-              <div id="payment-method" class="panel panel-default">
-                <div class="panel-heading">
-                  <h2 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#checkout-page" href="#payment-method-content" class="accordion-toggle">
-                      Step 4: Payment Method
-                    </a>
-                  </h2>
-                </div>
-                <div id="payment-method-content" class="panel-collapse collapse">
-                  <div class="panel-body row">
-                    <div class="col-md-12">
-                      <p>Please select the preferred payment method to use on this order.</p>
-                      <div class="radio-list">
-                        <label>
-                          <input type="radio" name="CashOnDelivery" value="CashOnDelivery"> Cash On Delivery
-                        </label>
-                      </div>
-                      <div class="form-group">
-                        <label for="delivery-payment-method">Add Comments About Your Order</label>
-                        <textarea id="delivery-payment-method" rows="8" class="form-control"></textarea>
-                      </div>
-                      <button class="btn btn-primary  pull-right" type="submit" id="button-payment-method" data-toggle="collapse" data-parent="#checkout-page" data-target="#confirm-content">Continue</button>
-                      <div class="checkbox pull-right">
-                        <label>
-                          <input type="checkbox"> I have read and agree to the <a title="Terms & Conditions" href="javascript:;">Terms & Conditions </a> &nbsp;&nbsp;&nbsp; 
-                        </label>
-                      </div>  
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- END PAYMENT METHOD -->
 
               <!-- BEGIN CONFIRM -->
               <div id="confirm" class="panel panel-default">
                 <div class="panel-heading">
                   <h2 class="panel-title">
                     <a data-toggle="collapse" data-parent="#checkout-page" href="#confirm-content" class="accordion-toggle">
-                      Step 5: Confirm Order
+                      Step 2: Confirm Order
                     </a>
                   </h2>
                 </div>
@@ -394,18 +322,31 @@
                           </li>
                           <li class="checkout-total-price">
                             <em>Total</em>
-                            <strong class="price"><span>$</span>{{c_total_price|add:5.00}}</strong>
+                            <strong class="price"><span>$</span>{{c_total_price|addfloat:5.00}}</strong>
                           </li>
                         </ul>
                       </div>
                       <div class="clearfix"></div>
-                      <button class="btn btn-primary pull-right" type="submit" id="button-confirm">Confirm Order</button>
-                      <button type="button" class="btn btn-default pull-right margin-right-20">Cancel</button>
+
+                      {% with c_items|length as length %}
+                      {% if length > 0 %}
+                      <div>
+                        <button class="btn btn-primary pull-right button-order" type="submit" id="button-confirm">Confirm Order</button>
+                      </div>
+                      <!-- <button type="button" class="btn btn-default pull-right margin-right-20" id="button-cancel">Cancel</button> -->
+                      <div id="paypal-button-container" class="button-paypal pull-right margin-top-10 margin-right-10 hidden"></div>
+                      {% endif %}
+                    
+                      {% endwith %}
                     </div>
                   </div>
                 </div>
               </div>
               <!-- END CONFIRM -->
+
+            </form>
+            <!-- END FORM -->
+
             </div>
             <!-- END CHECKOUT PAGE -->
           </div>
@@ -416,20 +357,99 @@
     </div>
 
       
-    {% endblock body %}
+{% endblock body %}
 
 
-    {% block js %}
-  
-    <script src='assets/plugins/zoom/jquery.zoom.min.js' type="text/javascript"></script><!-- product zoom -->
-    <script src="assets/plugins/bootstrap-touchspin/bootstrap.touchspin.js" type="text/javascript"></script><!-- Quantity -->
-    <script src="assets/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
-    <script src="assets/pages/scripts/checkout.js" type="text/javascript"></script>
-    <script type="text/javascript">
-        jQuery(document).ready(function() {
-            Layout.initUniform();
-            Checkout.init();
-        });
-    </script>
+{% block js %}
+
+  <script src="https://www.paypal.com/sdk/js?client-id=AXaaQRe8HHm8b2jXZyX-IZOCLg4t9pN0USrkmteJaR0u7Xw1VfikIbkzWMZHko1OLxwmYktX0HGLgfLw&currency=USD&disable-funding=credit,venmo"></script>
+
+  <script>
+
+    var total = "{{c_total_price|addfloat:5.00}}"
+	  total = parseFloat(total).toFixed(2)
+
+    paypal.Buttons({
+        style: {
+            color: 'blue',
+            shape: 'pill',
+            label: 'pay',
+            height: 40,
+        },
+        createOrder: function (data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        currency_code: 'USD',
+                        value: total,
+                    },
+                }],
+            });
+        },
+        onApprove: function (data, actions) {
+            return actions.order.capture().then(function (details) {
+                console.log('Capture result', details, JSON.stringify(details, null, 2));
+				        submitData()
+                var transaction = details.purchase_units[0].payments.captures[0];
+                //alert('Transaction ' + transaction.status + ': ' + transaction.id);
+            }).catch(function (error) {
+                console.error(error);
+                alert('Sorry, your transaction could not be processed.');
+            });
+        }
+    }).render('#paypal-button-container');
+
+
+    $('#checkoutForm').submit(function(event){
+      event.preventDefault()
+
+      value = $('#delivery-checkbox').is(':checked')
+
+      if(value == false){
+        $('.button-paypal').removeClass('hidden')
+        $('#button-confirm').addClass('hidden')
+      }
+      else if (value==true){
+        submitData()
+      }
+    })// Button
+
+
+  function submitData(){
+    var total = "{{c_total_price}}"
+    total = parseFloat(total)
     
+    var first_name = $('#firstname').val()
+    var last_name = $('#lastname').val()
+    var email = $('#email').val()
+    var phone= $('#phone').val()
+    var address = $('#address').val()
+    var city = $('#city').val()
+    var state = $('#state').val()
+    var country = $('#country').val()
+    var postal_code = $('#post-code').val()
+    var cashOnDelivery = $('#delivery-checkbox').is(':checked')
+    var desc = $('#comments').val()
+    var policy = $('#policy').is(':checked')
+
+    $.ajax({
+      type: 'POST',
+      url:'/checkout/',
+      data: JSON.stringify({'first_name':first_name,'last_name': last_name, 'email': email,
+                          'phone': phone, 'address': address, 'city': city, 'state': state,
+                          'country': country, 'postal_code': postal_code,
+                          'cashOnDelivery': cashOnDelivery, 'desc': desc, 'total': total
+                        }),
+      headers:{
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken,
+      },
+      success: function(){
+        alert('Your order has been Placed Successfully! Thanks')
+        document.location = '/index/'
+      },
+
+       })//AJAX
+      }
+    </script>
   {% endblock js %}

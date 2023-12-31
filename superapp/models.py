@@ -119,6 +119,33 @@ class OrderItem(models.Model):
         total = self.quantity*float(self.product.price)
         return round(total, 2)
 
+class Checkout(models.Model):
+
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    email = models.EmailField(max_length=100)
+    phone = models.CharField(max_length=50)
+    address = models.CharField(max_length=300)
+    city = models.CharField(max_length=100)
+    postal_code = models.CharField(max_length=50)
+    state = models.CharField(max_length=100)
+    country = models.CharField(max_length=100)
+    comments = models.TextField(blank=True)
+    cashOnDelivery = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+
+class Contact(models.Model):
+
+    name = models.CharField(max_length=50)
+    email = models.EmailField(max_length=254)
+    desc = models.TextField()
+
+    def __str__(self):
+        return self.name
+
 
 class Countries(models.Model):
     code = models.CharField(max_length=5)

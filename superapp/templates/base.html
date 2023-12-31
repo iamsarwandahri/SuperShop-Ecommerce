@@ -28,6 +28,11 @@
     <link rel="shortcut icon" href="favicon.ico">
 
 
+    {% block css %}
+      
+    {% endblock css %}
+
+
 <!-- Fonts START --> 
  <link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|PT+Sans+Narrow|Source+Sans+Pro:200,300,400,600,700,900&amp;subset=all" rel="stylesheet" type="text/css">
 <!-- Fonts END -->
@@ -135,7 +140,6 @@
                   <div class="col-md-6 col-sm-6 additional-nav">
                       <ul class="list-unstyled list-inline pull-right">
                           <li><a href="{% url 'account' %}">My Account</a></li>
-                          <li><a href="{% url 'wishlist' %}">My Wishlist</a></li>
                           <li><a href="{% url 'checkout' %}">Checkout</a></li>
                           {% if user.is_authenticated %}
                           <li><a href="{% url 'admin:index' %}">Account</a></li>  
@@ -329,11 +333,8 @@
                   <li><a href="{% url 'shopping_cart' %}">Shopping Cart</a></li>
                   <li><a href="{% url 'checkout' %}">Checkout</a></li>
                   <li><a href="{% url 'about' %}">About</a></li>
-                  <li><a href="{% url 'contacts' %}">Contacts</a></li>
+                  <li><a href="{% url 'contact' %}">Contact</a></li>
                   <li><a href="{% url 'account' %}">My account</a></li>
-                  <!-- <li><a href="{url 'wishlist'}">My Wish List</a></li> -->
-                  <li><a href="{% url 'goods_compare' %}">Product Comparison</a></li>
-                  <li><a href="{% url 'standard_forms' %}">Standart Forms</a></li>
                   <li><a href="{% url 'faq' %}">FAQ</a></li>
                   <li><a href="{% url 'privacy_policy' %}">Privacy Policy</a></li>
                   <li><a href="{% url 'terms_conditions' %}">Terms &amp; Conditions</a></li>
