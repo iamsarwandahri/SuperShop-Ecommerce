@@ -30,7 +30,7 @@ def product_list(request, page=1):
 
     products = Product.objects.all()
     items = Product.objects.all()
-    paginator = Paginator(items, 10)   # 10 items per page
+    paginator = Paginator(items, 10)
 
     try:
         current_page = paginator.page(page)
@@ -84,19 +84,6 @@ def product_list(request, page=1):
                             'sale': product.sale,
                             'new': product.new,
                             })
-            
-            elif len(searchItem) > 0 and source == 'page_filter':
-                for product in products:
-                    if i <= page_no*itemsperPage and i > (page_no-1)*itemsperPage:
-                        product_list.append({
-                            'id': product.id,
-                            'name': product.name,
-                            'price': product.price,
-                            'image': product.imageURL,
-                            'sale': product.sale,
-                            'new': product.new,
-                            })
-                    i += 1
                     
             elif len(searchItem) > 0:
                 for product in products:
@@ -109,10 +96,22 @@ def product_list(request, page=1):
                             'sale': product.sale,
                             'new': product.new,
                             })
+                
                 totalProducts = product_list
+
+                if source == 'page_filter':
+                    page_no = data.get('page_no')
+                    if len(product_list) > 0:
+                        if itemsperPage<=len(product_list):
+                            product_list = product_list[itemsperPage*(page_no-1):itemsperPage*page_no]
+                        else:
+                            product_list = product_list[itemsperPage*(page_no-1):]
+
+                    print('LIST: ', product_list)
 
             elif source == 'page_filter':
                 page_no = data.get('page_no')
+                print('PAGE FILTER')
 
                 i = 1
                 for product in products:
