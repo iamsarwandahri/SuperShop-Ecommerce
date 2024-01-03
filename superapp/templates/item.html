@@ -75,7 +75,7 @@
               {% if product.new %}
               <div class="item">
                 <a href="shop-item.html"><img src={{product.imageURL}} alt="Some Shoes in Animal with Cut Out"></a>
-                <h3><a href="shop-item.html">{{product.name}}</a></h3>
+                <h3><a id="name{{product.id}}" href="shop-item.html">{{product.name}}</a></h3>
                 <div class="price">${{product.price}}</div>
               </div>
 
@@ -91,7 +91,7 @@
               <div class="row">
                 <div class="col-md-6 col-sm-6">
                   <div class="product-main-image">
-                    <img src={{product.imageURL}} alt="Cool green dress with red bell" class="img-responsive" data-BigImgsrc="assets/pages/img/products/model7.jpg">
+                    <img id="image{{product.id}}" src={{product.imageURL}} alt="Cool green dress with red bell" class="img-responsive" data-BigImgsrc="assets/pages/img/products/model7.jpg">
                   </div>
                   <!-- <div class="product-other-images">
                     <a href="assets/pages/img/products/model3.jpg" class="fancybox-button" rel="photos-lib"><img alt="Berry Lace Dress" src="assets/pages/img/products/model3.jpg"></a>
@@ -100,10 +100,10 @@
                   </div> -->
                 </div>
                 <div class="col-md-6 col-sm-6">
-                  <h1>{{product.name}}</h1>
+                  <h1 id="name{{product.id}}">{{product.name}}</h1>
                   <div class="price-availability-block clearfix">
                     <div class="price">
-                      <strong><span>$</span>{{product.price}}</strong>
+                      <strong>$<span id="price{{product.id}}">{{product.price}}</span></strong>
                       <em>$<span>{{product.price|multiply:1.2}}</span></em>
                     </div>
 
@@ -283,14 +283,14 @@
               <div>
                 <div class="product-item">
                   <div class="pi-img-wrapper">
-                    <img src={{product.imageURL}} class="img-responsive" alt="Berry Lace Dress">
+                    <img id="image{{product.id}}" src={{product.imageURL}} class="img-responsive" alt="Berry Lace Dress">
                     <div>
                       <a href={{product.imageURL}} class="btn btn-default fancybox-button">Zoom</a>
                       <a href="#product-pop-up" class="btn btn-default fancybox-fast-view">View</a>
                     </div>
                   </div>
-                  <h3><a href="shop-item.html">{{product.name}}</a></h3>
-                  <div class="pi-price">${{product.price}}</div>
+                  <h3><a id="name{{product.id}}" href="shop-item.html">{{product.name}}</a></h3>
+                  <div class="pi-price">$<span id="price{{product.id}}">{{product.price|floatformat:2}}</span></div>
                   <a data-id={{product.id}} data-action="add" id="{{product.id}}" href="javascript:;" class="btn btn-default add2cart">Add to cart</a>
                 </div>
               </div>
@@ -313,7 +313,7 @@
               <div class="row">
                 <div class="col-md-6 col-sm-6 col-xs-3">
                   <div class="product-main-image">
-                    <img src={{product.imageURL}} alt="Cool green dress with red bell" class="img-responsive">
+                    <img id="image{{product.id}}" src={{product.imageURL}} alt="Cool green dress with red bell" class="img-responsive">
                   </div>
                   <div class="product-other-images">
                     <a href="javascript:;" class="active"><img alt="Berry Lace Dress" src="assets/pages/img/products/model3.jpg"></a>

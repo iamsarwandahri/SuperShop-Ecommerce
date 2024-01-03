@@ -1,8 +1,7 @@
-$('.add2cart').on('click', function (){
-  
+$(document).on('click', '.add2cart', function () {
   var action = $(this).data('action')
   var id = $(this).data('id')
-  
+
   value = 0
   //adding no of items if acion is add items
   if (action === 'additems') {
@@ -11,16 +10,16 @@ $('.add2cart').on('click', function (){
 
   //If user os logged in
   if (user != 'AnonymousUser') {
-    updateCart(action, id, value)
+    updateCartLogin(action, id, value)
   }
   else {
     updateCartCookies(action, id, value)
+
   }
 })
 
 
-
-function updateCart(action, id, value) {
+function updateCartLogin(action, id, value) {
 
   $.ajax({
     type: "POST",
@@ -39,32 +38,28 @@ function updateCart(action, id, value) {
       image = data['image']
       quantity = data['quantity']
       product = data['name']
-      total_price = data['total_price']
+      item_total = data['total_price']
 
 
       //Updating Shopping cart Page
       if ($('#shopping_cart_product_quantity' + id).val() != undefined) {
         quantity = data['quantity']
-        shopping_cart_total_price = data['cart_total_price']
-        shopping_cart_total_price_ = data['cart_total_price'] + 3.0
-        shopping_cart_item_total_price = data['total_price'].toFixed(2)
+        shopping_cart_sub_total = data['cart_total_price']
+        shopping_cart_total = data['cart_total_price'] + 3.0
+        shopping_cart_item_total = data['total_price'].toFixed(2)
         $('#shopping_cart_product-quantity' + id).val(quantity)
-        $('#shopping_cart_total_price').html('$' + shopping_cart_total_price)
-        $('#shopping_cart_total_price_').html('$' + shopping_cart_total_price_.toFixed(2))
-        $('#shopping_cart_item_total_price' + id).html('$' + shopping_cart_item_total_price)
+        $('#shopping_cart_total_price').html('$' + shopping_cart_sub_total)
+        $('#shopping_cart_total_price_').html('$' + shopping_cart_total.toFixed(2))
+        $('#shopping_cart_item_total_price' + id).html('$' + shopping_cart_item_total)
 
         if (quantity == 0) {
           $('#shopping_cart_item_row' + id).remove()
         }
       }
 
-      add = data['add']
-      remove = data['remove']
-
-
       if ($('#item' + id).val() != undefined && quantity > 0) {
         $('#item_quantity' + id).html('x' + quantity)
-        $('#item_price' + id).html(total_price)
+        $('#item_price' + id).html(item_total)
       }
 
       else if (quantity == 0) {
@@ -76,7 +71,7 @@ function updateCart(action, id, value) {
                 <a href="{% url 'item' id=`+ id + ` %}"><img src=` + image + ` alt="Rolex Classic Watch" width="37" height="34"></a>
                 <span id="item_quantity`+ id + `" class="cart-content-count">x` + quantity + `</span>
                 <strong><a id="item`+ id + `" href="{% url 'item' id=` + id + ` %}">` + product + `</a></strong>
-                <em id="total_price`+ id + `">` + total_price + `</em>
+                <em id="total_price`+ id + `">` + item_total + `</em>
                 <a href="javascript:void(0);" class="del-goods">&nbsp;</a>
                 </li>`
         $('#scroller').append(item)
@@ -87,8 +82,158 @@ function updateCart(action, id, value) {
 }
 
 function updateCartCookies(action, id, value) {
-  console.log("USER NOT LOGGED IN")
+
+  if (action == 'add') {
+
+    if (cart[id] == undefined) {
+      price = parseFloat($('#price' + id).text())
+      image = $('#image' + id).attr('src')
+      name = $('#name' + id).text()
+
+      cart[id] = { 'id': id, 'name': name, 'price': price, 'image': image, 'qty': 1 }
+    }
+
+    else {
+      cart[id]['qty'] += 1
+    }
+    $('#add-quantity' + id).val(cart[id]['qty'])
+  }//ADD
+
+  else if (action == 'remove') {
+    if (cart[id]['qty'] > 0) {
+      cart[id]['qty'] -= 1
+
+      $("#" + id).html(cart[id]['qty'])
+      $('#add-quantity' + id).val(cart[id]['qty'])
+    }
+  }//Remove
+
+  else if (action == 'additems') {
+
+    if (cart[id] == undefined) {
+      price = parseFloat($('#price' + id).text())
+      image = $('#image' + id).attr('src')
+      name = $('#name' + id).text()
+      if (value > 0) {
+        cart[id] = { 'id': id, 'name': name, 'price': price, 'image': image, 'qty': value }
+      }
+    }
+
+    else {
+      cart[id]['qty'] = parseInt(value)
+    }
+
+    if (cart[id]['qty'] == 0) { delete cart[id] }
+  }//additems
+
+  document.cookie = "cart=" + JSON.stringify(cart) + ";domain=;path=/"
+
+
+  if (cart[id]) {
+
+    var cart_items = 0
+    var cart_total = 0.0
+
+    for (var item in cart) {
+      cart_items += cart[item]['qty']
+      cart_total = (cart_total + (cart[item]['price'] * cart[item]['qty']))
+    }
+
+    cart_total = cart_total.toFixed(2)
+    $('#cart_total_price').html('Total: $' + cart_total)
+    $('#cart_total_items').html('Items: ' + cart_items)
+    image = cart[id]['image']
+    quantity = cart[id]['qty']
+    product = cart[id]['name']
+
+    //Updating Shopping cart Page
+    if ($('#shopping_cart_product_quantity' + id).val() != undefined) {
+      quantity = cart[id]['qty']
+      shopping_cart_item_total = parseFloat(cart[id]['qty'] * cart[id]['price'])
+      shopping_cart_total = cart_total + 3.00
+
+      $('#shopping_cart_product_quantity' + id).val(quantity)
+      $('#shopping_cart_total_price').html('$' + cart_total)
+      $('#shopping_cart_total_price_').html('$' + shopping_cart_total)
+      $('#shopping_cart_item_total_price' + id).html('$' + shopping_cart_item_total.toFixed(2))
+
+      if (quantity == 0) {
+        $('#shopping_cart_item_row' + id).remove()
+      }
+    }
+
+    if ($('#item' + id).val() != undefined && quantity > 0) {
+      item_total = parseFloat(cart[id]['qty'] * cart[id]['price'])
+      $('#item_quantity' + id).html('x' + quantity)
+      $('#item_price' + id).html(item_total)
+    }
+
+    else if (quantity == 0) { $('#scroll_cart' + id).remove() }
+
+    else {
+      var item = `<li id="scroll_cart${id}">
+                <a href="{% url 'item' id=${id} %}"><img src=${image} alt="Rolex Classic Watch" width="37" height="34"></a>
+                <span id="item_quantity`+ id + `" class="cart-content-count">x${quantity}</span>
+                <strong><a id="item${id}" href="{% url 'item' id=${id} %}">${product}</a></strong>
+                <em id="total_price${id}">${cart_total}</em>
+                <a href="javascript:void(0);" class="del-goods">&nbsp;</a>
+                </li>`
+      $('#scroller').append(item)
+    }
+  }
+
+  if (Object.keys(cart).length) {
+    if (cart[id]['qty'] == 0) {
+      $('#div' + id).html("")
+      delete cart[id]
+    }
+  }
+
+}//UpdateCartCookies
+
+$(document).ready(function () {
+  updateCart()
+});
+
+
+
+function updateCart() {
+  var cart_items = 0
+  var cart_total = 0.0
+  for (var item in cart) {
+    cart_items += cart[item]['qty']
+    cart_total = (cart_total + (cart[item]['price'] * cart[item]['qty']))
+    $('#add-quantity' + item).val(cart[item]['qty'])
+  }
+
+  cart_total = cart_total.toFixed(2)
+  $('#cart_total_price').html('Total: $' + cart_total)
+  $('#cart_total_items').html('Items: ' + cart_items)
+
+
+  for (var c in cart) {
+    id = cart[c]['id']
+    image = cart[c]['image']
+    quantity = cart[c]['qty']
+    product = cart[c]['name']
+
+    var item = `<li id="scroll_cart${id}">
+              <a href="{% url 'item' id=${id} %}"><img src=${image} alt="Rolex Classic Watch" width="37" height="34"></a>
+              <span id="item_quantity`+ id + `" class="cart-content-count">x${quantity}</span>
+              <strong><a id="item${id}" href="{% url 'item' id=${id} %}">${product}</a></strong>
+              <em id="total_price${id}">${cart_total}</em>
+              <a href="javascript:void(0);" class="del-goods">&nbsp;</a>
+              </li>`
+    $('#scroller').append(item)
+  }
+  if (Object.keys(cart).length) {
+    if (cart[id]['qty'] == 0) {
+      $('#div' + id).html("")
+      delete cart[id]
+    }
+  }
 }
+
 
 
 
@@ -110,7 +255,7 @@ newBox.add(saleBox).on('change', function () {
     var itemsPerPage = parseInt($('.selectItemNo').find(":selected").text());
     var itemsOrder = $('.selectOrder').find(":selected").text();
     var searchBox = $('#searchBox').val()
-    
+
     numbers = rangeValues()
     value1 = numbers[0]
     value2 = numbers[1]
@@ -119,7 +264,7 @@ newBox.add(saleBox).on('change', function () {
     $.ajax({
       type: 'POST',
       url: '/product_list/',
-      data: JSON.stringify({'searchBox':searchBox, 'value1': value1, 'value2': value2, 'newChecked': newChecked, 'saleChecked': saleChecked, 'itemsPerPage': itemsPerPage, 'itemsOrder': itemsOrder, 'source': 'filter' }),
+      data: JSON.stringify({ 'searchBox': searchBox, 'value1': value1, 'value2': value2, 'newChecked': newChecked, 'saleChecked': saleChecked, 'itemsPerPage': itemsPerPage, 'itemsOrder': itemsOrder, 'source': 'filter' }),
       headers: {
         'Content-Type': 'application/json',
         'X-CSRFToken': csrftoken,
@@ -163,7 +308,7 @@ $("#slider-range").slider({
     $.ajax({
       type: 'POST',
       url: '/product_list/',
-      data: JSON.stringify({'searchBox':searchBox, 'value1': value1, 'value2': value2, 'newChecked': newChecked, 'saleChecked': saleChecked, 'itemsPerPage': itemsPerPage, 'itemsOrder': itemsOrder, 'source': 'slider_range' }),
+      data: JSON.stringify({ 'searchBox': searchBox, 'value1': value1, 'value2': value2, 'newChecked': newChecked, 'saleChecked': saleChecked, 'itemsPerPage': itemsPerPage, 'itemsOrder': itemsOrder, 'source': 'slider_range' }),
       headers: {
         'Content-Type': 'application/json',
         'X-CSRFToken': csrftoken,
@@ -209,7 +354,7 @@ $(".selectOption").on("change", function () {
   $.ajax({
     type: 'POST',
     url: '/product_list/',
-    data: JSON.stringify({'searchBox':searchBox, 'newChecked': newChecked, 'saleChecked': saleChecked, 'itemsPerPage': itemsPerPage, 'itemsOrder': itemsOrder, 'value1': value1, 'value2': value2, 'source': 'selectOption' }),
+    data: JSON.stringify({ 'searchBox': searchBox, 'newChecked': newChecked, 'saleChecked': saleChecked, 'itemsPerPage': itemsPerPage, 'itemsOrder': itemsOrder, 'value1': value1, 'value2': value2, 'source': 'selectOption' }),
     headers: {
       'Content-Type': 'application/json',
       'X-CSRFToken': csrftoken,
@@ -245,7 +390,7 @@ $(document).on('click', '.page', function () {
   $.ajax({
     type: 'POST',
     url: '/product_list/',
-    data: JSON.stringify({'searchBox':searchBox, 'value1': value1, 'value2': value2, 'saleChecked': saleChecked, 'newChecked': newChecked, 'page_no': page_no, 'itemsPerPage': itemsPerPage, 'itemsOrder': itemsOrder, 'source': 'page_filter' }),
+    data: JSON.stringify({ 'searchBox': searchBox, 'value1': value1, 'value2': value2, 'saleChecked': saleChecked, 'newChecked': newChecked, 'page_no': page_no, 'itemsPerPage': itemsPerPage, 'itemsOrder': itemsOrder, 'source': 'page_filter' }),
     headers: {
       'Content-Type': 'application/json',
       'X-CSRFToken': csrftoken,
@@ -297,7 +442,7 @@ $('#search').on('click', function () {
 
 
 function itemsUpdate(data, page_no = 1, pagess = 1) {
-  
+
   $('.products-filter').html('')
   var itemsPerPage = $('.selectItemNo').find(":selected").text();
   display_items = parseInt(itemsPerPage)

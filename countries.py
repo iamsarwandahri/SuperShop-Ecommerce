@@ -1,7 +1,6 @@
 import os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'supershop.settings')
 
-
 import django
 django.setup()
 

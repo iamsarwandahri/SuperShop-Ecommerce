@@ -101,11 +101,10 @@ Men category | Metronic Shop UI
         <div class="sidebar-products clearfix">
           <h2>Bestsellers</h2>
           {% for item in c_items %}
-
           <div class="item">
             <a href="{% url 'item' id=item.product.id %}"><img src={{item.product.imageURL}}
                 alt="Some Shoes in Animal with Cut Out"></a>
-            <h3><a href="{% url 'item' id=item.product.id %}">{{item.product.name}}</a></h3>
+            <h3><a id="name{{product.id}}" href="{% url 'item' id=item.product.id %}">{{item.product.name}}</a></h3>
             <div class="price">${{item.product.price}}</div>
           </div>
           {% endfor %}
@@ -176,14 +175,14 @@ Men category | Metronic Shop UI
           <div class="col-md-4 col-sm-6 col-xs-12">
             <div class="product-item">
               <div class="pi-img-wrapper">
-                <img src={{product.imageURL}} class="img-responsive" alt="{{product.name}}">
+                <img id="image{{product.id}}" src={{product.imageURL}} class="img-responsive" alt="{{product.name}}">
                 <div>
                   <a href="{{product.imageURL}}" class="btn btn-default fancybox-button">Zoom</a>
                   <a href="#{{product.id}}pop-up" class="btn btn-default fancybox-fast-view">View</a>
                 </div>
               </div>
-              <h3><a href="{% url 'item' id=product.id %}">{{product.name}}</a></h3>
-              <div class="pi-price">${{product.price}}</div>
+              <h3><a id="name{{product.id}}" href="{% url 'item' id=product.id %}">{{product.name}}</a></h3>
+              <div class="pi-price">$<span id="price{{product.id}}">{{product.price|floatformat:2}}</span></div>
               <a data-id={{product.id}} data-action="add" href="javascript:;" class="btn btn-default add2cart">Add to
                 cart</a>
               {% if product.sale %}

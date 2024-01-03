@@ -19,22 +19,17 @@ class Product(models.Model):
     new = models.BooleanField(default=False)
     sale = models.BooleanField(default=False)
     avail = models.BooleanField(default=True)
-    desc = models.TextField(default="""Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    desc = models.TextField(
+        default="""Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                             Praesent sit amet aliquam elit, sed ornare arcu. Nam gravida pellentesque
                             posuere. Sed sed metus in metus ullamcorper pellentesque. Maecenas tincidunt
-                            mi aliquam urna consectetur vulputate. Nullam sed dolor justo. Morbi ultrices
-                            enim lorem, sit amet feugiat lacus finibus eu. Proin condimentum massa enim,
-                            vel tristique tortor vehicula at. Integer ornare eget elit pellentesque hendrerit.
-                            Fusce vel imperdiet felis. In elit tellus, ultrices sed augue sit amet, dapibus malesuada velit.
-                            Proin iaculis nisl faucibus sagittis aliquet. Donec vehicula vestibulum mauris vitae tempor.
-                            Aliquam tempus, dui ac semper varius, sem felis sollicitudin risus, quis gravida tortor leo eget
-                            tortor. Vestibulum mauris arcu, tristique quis ultrices id, ornare quis ipsum. Aliquam convallis
-                            eleifend rhoncus. Nulla et felis sit amet arcu laoreet rhoncus ac id eros. Nulla at enim eu lacus
-                            viverra viverra. Curabitur leo tellus, congue ut imperdiet quis, porta sed diam. Curabitur pretium
-                            convallis faucibus. Nunc nec sem quis orci convallis pretium id in tellus""")
+                            mi aliquam urna consectetur vulputate. Nullam sed dolor justo."""
+    )
 
     def generate_unique_code():
-        unique_code = str(uuid.uuid4().hex)[:8]  # Use the first 8 characters of the hexadecimal UUID
+        unique_code = str(uuid.uuid4().hex)[
+            :8
+        ]  # Use the first 8 characters of the hexadecimal UUID
         return unique_code
 
     reference = models.CharField(max_length=100, default=str(generate_unique_code()))
@@ -51,20 +46,20 @@ class Product(models.Model):
         ("Clothes", "Clothes"),
         ("Accessories", "Accessories"),
         ("Clearance", "Clearance"),
-        ('Technology', 'Technology'),
-        ('Sports', 'Sports'),
-        ('Toy', 'Toy'),
+        ("Technology", "Technology"),
+        ("Sports", "Sports"),
+        ("Toy", "Toy"),
     ]
     sub_category = models.CharField(choices=sub_choices, max_length=50)
-    image = models.ImageField(upload_to='product_images', blank=True)
+    image = models.ImageField(upload_to="product_images", blank=True)
 
     @property
     def imageURL(self):
-
         try:
             url = self.image.url
-        except:
-            url = ''
+        except Exception as e:
+            print(e)
+            url = ""
 
         return url
 
@@ -92,7 +87,7 @@ class Order(models.Model):
         total = 0
         orderitems = self.orderitem_set.all()
         for item in orderitems:
-            total = total+item.quantity
+            total = total + item.quantity
         return int(total)
 
     @property
@@ -100,7 +95,7 @@ class Order(models.Model):
         total = 0.0
         orderItems = self.orderitem_set.all()
         for item in orderItems:
-            total = total + (float(item.product.price)*item.quantity)
+            total = total + (float(item.product.price) * item.quantity)
         return round(total, 2)
 
 
@@ -112,15 +107,15 @@ class OrderItem(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return F"{self.product} : {int(self.quantity)}"
+        return f"{self.product} : {int(self.quantity)}"
 
     @property
     def total_price(self):
-        total = self.quantity*float(self.product.price)
+        total = self.quantity * float(self.product.price)
         return round(total, 2)
 
-class Checkout(models.Model):
 
+class Checkout(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.EmailField(max_length=100)
@@ -138,7 +133,6 @@ class Checkout(models.Model):
 
 
 class Contact(models.Model):
-
     name = models.CharField(max_length=50)
     email = models.EmailField(max_length=254)
     desc = models.TextField()
