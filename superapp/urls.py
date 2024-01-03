@@ -19,5 +19,8 @@ urlpatterns = [
     path('search_result/', views.search_result, name='search_result'),
     path('shopping_cart/', views.shopping_cart, name='shopping_cart'),
     path('terms_conditions/', views.terms_conditions, name='terms_conditions'),
+    path('login/', views.login, name='login'),
+    path('signup/', views.singup, name='signup'),
+    path('logout/', views.singup, name='logout'),
     
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

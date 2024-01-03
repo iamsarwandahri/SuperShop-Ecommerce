@@ -24,6 +24,18 @@ def index(request):
     return render(request, "index.html", context)
 
 
+def login(request):
+    return render(request, "login.html")
+
+
+def singup(request):
+    return render(request, 'signup.html')
+
+
+def logout(request):
+    return render(request, 'logout.html')
+
+
 def product_list(request, page=1):
     products = Product.objects.all()
     items = Product.objects.all()
