@@ -37,7 +37,7 @@ html,body{
 .wrapper .slide-controls{
   position: relative;
   display: flex;
-  height: 50px;
+  /* height: 50px; */
   width: 100%;
   overflow: hidden;
   margin: 30px 0 10px 0;
@@ -63,12 +63,12 @@ html,body{
 .slide-controls .slider-tab{
   position: absolute;
   height: 100%;
-  width: 50%;
+  width: 100%;
   left: 0;
   z-index: 0;
   border-radius: 15px;
-  background: -webkit-linear-gradient(left,#003366,#004080,#0059b3
-, #0073e6);
+  background: -webkit-linear-gradient(left,#e8694f,#e84d1c,#e84d1c , #e84d1c);
+
   transition: all 0.6s cubic-bezier(0.68,-0.55,0.265,1.55);
 }
 input[type="radio"]{

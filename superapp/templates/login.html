@@ -11,53 +11,32 @@
 <div class="wrapper margin-bottom-20">
     <div class="title-text">
       <div class="title login">Login Form</div>
-      <div class="title signup">Signup Form</div>
     </div>
     <div class="form-container">
       <div class="slide-controls">
-        <input type="radio" name="slide" id="login" checked>
-        <input type="radio" name="slide" id="signup">
-        <label for="login" class="slide login">Login</label>
-        <label for="signup" class="slide signup">Signup</label>
         <div class="slider-tab"></div>
       </div>
       <div class="form-inner">
-        <form action="#" class="login">
+        <form method="post" class="login">
+          {% csrf_token %}
           <div class="field">
-            <input type="text" placeholder="Email Address" required>
+            <input id="username" name="username" type="username" placeholder="Username" required>
           </div>
           <div class="field">
-            <input type="password" placeholder="Password" required>
+            <input id="password" name="password" type="password" placeholder="Password" required>
           </div>
           <div class="pass-link"><a href="#">Forgot password?</a></div>
           <div class="field btn">
             <div class="btn-layer"></div>
             <input type="submit" value="Login">
           </div>
-          <div class="signup-link">Not a member? <a href="">Signup now</a></div>
-        </form>
-        <form action="#" class="signup">
-          <div class="field">
-            <input type="text" placeholder="Email Address" required>
-          </div>
-          <div class="field">
-            <input type="password" placeholder="Password" required>
-          </div>
-          <div class="field">
-            <input type="password" placeholder="Confirm password" required>
-          </div>
-          <div class="field btn">
-            <div class="btn-layer"></div>
-            <input type="submit" value="Signup">
-          </div>
+          <div class="signup-link">Not a member? <a href="{% url 'signup'%}">Signup now</a></div>
         </form>
       </div>
+      {% for message in messages  %}
+      <h5 class="message text-center margin-top-10"> <strong>{{message}}</strong></h5>
+      {% endfor %}  
     </div>
   </div>
 {% endblock body %}
-
-{% block js %}
-<script src="{% static 'js/login.js' %}"> </script>
-  
-{% endblock js %}
 

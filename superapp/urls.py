@@ -21,6 +21,6 @@ urlpatterns = [
     path('terms_conditions/', views.terms_conditions, name='terms_conditions'),
     path('login/', views.login, name='login'),
     path('signup/', views.singup, name='signup'),
-    path('logout/', views.singup, name='logout'),
+    path('logout/', views.logout, name='logout'),
     
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
