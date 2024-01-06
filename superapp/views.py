@@ -1,11 +1,20 @@
-from django.shortcuts import render, redirect
-from superapp.models import Product, OrderItem, Order, Countries, Contact, Checkout, Customer
+from django.shortcuts import render, redirect, HttpResponseRedirect
+from superapp.models import (
+    Product,
+    OrderItem,
+    Order,
+    Countries,
+    Contact,
+    Checkout,
+    Customer,
+)
 import json
 from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from datetime import datetime
 from django.contrib import auth, messages
 from django.contrib.auth.models import User
+from .middlewares import check_login
 
 
 def base(request):
@@ -27,17 +36,24 @@ def index(request):
 
 
 def login(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+    url = request.GET.get("url")
+
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
         user = auth.authenticate(username=username, password=password)
 
         if user is not None:
             auth.login(request, user)
-            return redirect("index")
+
+            if url:
+                return HttpResponseRedirect(url)
+            else:
+                return redirect("login")
+
         else:
-            messages.info(request, 'Please Create account first!')
+            messages.info(request, "Please Create account first!")
             return redirect("login")
 
     return render(request, "login.html")
@@ -49,35 +65,39 @@ def logout(request):
 
 
 def singup(request):
-    if request.method == 'POST':
-        username = request.POST.get('s_username')
-        email = request.POST.get('email')
-        password = request.POST.get('s_password')
-        confirm_password = request.POST.get('c_password')
+    if request.method == "POST":
+        username = request.POST.get("s_username")
+        email = request.POST.get("email")
+        password = request.POST.get("s_password")
+        confirm_password = request.POST.get("c_password")
 
         if password != confirm_password:
             messages.info(request, "Passwords don't Match!")
 
         elif User.objects.filter(username=username).exists():
-            messages.info(request, 'Username Already exits!')
-            return ("signup")
+            messages.info(request, "Username Already exits!")
+            return "signup"
 
         elif User.objects.filter(email=email).exists():
             messages.info(request, "Email already exists!")
             return redirect("signup")
 
         else:
-            user = User.objects.create_user(username=username, email=email, password=password)
+            user = User.objects.create_user(
+                username=username, email=email, password=password
+            )
             user.save()
 
-            customer = Customer.objects.create(user=user, email=email, username=username)
+            customer = Customer.objects.create(
+                user=user, email=email, username=username
+            )
             customer.save()
 
             messages.info(request, "Account Created Successfully!")
 
             return redirect("login")
 
-    return render(request, 'signup.html')
+    return render(request, "signup.html")
 
 
 def product_list(request, page=1):
@@ -161,10 +181,10 @@ def product_list(request, page=1):
                     if len(product_list) > 0:
                         if itemsperPage <= len(product_list):
                             product_list = product_list[
-                                itemsperPage * (page_no - 1): itemsperPage * page_no
+                                itemsperPage * (page_no - 1) : itemsperPage * page_no
                             ]
                         else:
-                            product_list = product_list[itemsperPage * (page_no - 1):]
+                            product_list = product_list[itemsperPage * (page_no - 1) :]
 
             elif source == "page_filter":
                 page_no = data.get("page_no")
@@ -407,6 +427,7 @@ def contact(request):
     return render(request, "contact.html")
 
 
+@check_login
 def account(request):
     return render(request, "account.html")
 
