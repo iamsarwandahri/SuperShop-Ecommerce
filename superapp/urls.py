@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path("", views.index, name="home"),
     path("index/", views.index, name="index"),
     path("base", views.base, name="base"),
     path("index/<int:id>/item/", views.item, name="item"),

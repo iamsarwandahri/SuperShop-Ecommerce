@@ -192,7 +192,8 @@ function updateCartCookies(action, id, value) {
 }//UpdateCartCookies
 
 $(document).ready(function () {
-  updateCart()
+  if(user == 'AnonymousUser'){
+    updateCart()}
 });
 
 
@@ -232,7 +233,7 @@ function updateCart() {
       delete cart[id]
     }
   }
-}
+}// Update Cart
 
 
 

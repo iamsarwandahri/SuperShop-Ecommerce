@@ -32,11 +32,17 @@ def index(request):
         "products_sale": products_sale,
         "products_sports": products_sports,
     }
+    print(context["products_sale"])
+    print(context["products_sports"])
+
     return render(request, "index.html", context)
 
 
 def login(request):
     url = request.GET.get("url")
+
+    if request.user.is_authenticated:
+        return redirect('index')
 
     if request.method == "POST":
         username = request.POST.get("username")
@@ -61,7 +67,7 @@ def login(request):
 
 def logout(request):
     auth.logout(request)
-    return redirect("index")
+    return redirect("login")
 
 
 def singup(request):
